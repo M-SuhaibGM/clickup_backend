@@ -3,22 +3,25 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
+import morgan from 'morgan'; // ← Import Morgan
 
 import { env } from './config/env';
-import './config/passport'; // register Google strategy
+import './config/passport';
 import routes from './routes';
 import { errorHandler, notFound } from './middleware/error.middleware';
 
 const app = express();
 
-// CORS (frontend needs credentials to send the refresh cookie)
+// Logging middleware
+// 'dev' gives you colored logs (GET /api/users 200 15ms)
+app.use(morgan('dev')); // ← Add this here
+
 app.use(
   cors({
     origin: env.frontendUrl,
     credentials: true,
   })
 );
-
 app.use(express.json());
 app.use(cookieParser());
 

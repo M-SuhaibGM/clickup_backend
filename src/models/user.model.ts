@@ -1,4 +1,4 @@
-import { prisma } from './db';
+import { prisma } from '.';
 
 export interface GoogleProfileInput {
   googleId: string;
@@ -23,6 +23,12 @@ export const UserModel = {
   createLocal(data: { email: string; password: string; name: string }) {
     return prisma.user.create({
       data: { ...data, provider: 'local' },
+    });
+  },
+  findAll() {
+    return prisma.user.findMany({
+      select: { id: true, name: true, email: true, avatar: true },
+      orderBy: { name: 'asc' },
     });
   },
 

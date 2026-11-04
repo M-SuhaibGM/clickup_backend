@@ -10,27 +10,32 @@ datasource db {
 
 // User Roles Enum
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  password     String?
-  name         String
-  avatar       String?
-  googleId     String?  @unique
-  provider     String   @default("local") // "local" | "google"
-  refreshToken String? // hashed refresh token (optional rotation)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String?
+  name      String
+  avatar    String?
+  googleId  String?  @unique
+  provider  String   @default("local")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations (for later phases)
-  tasks    Task[]    @relation("UserTasks")
-  comments Comment[]
+  tasks      Task[]    @relation("UserTasks")
+  comments   Comment[]
+  projects   Project[] @relation("UserProjects")
+  lists      List[]    @relation("UserLists") // ← ADD
+  ownedTasks Task[]    @relation("OwnedTasks") // ← ADD
 }
 
 model Project {
   id          String   @id @default(uuid())
   name        String
   description String?
+  color       String   @default("#6366f1") // ← ADD (for sidebar dot)
+  ownerId     String // ← ADD
+  owner       User     @relation("UserProjects", fields: [ownerId], references: [id], onDelete: Cascade) // ← ADD
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   lists       List[]
 }
 
@@ -39,7 +44,15 @@ model List {
   name      String
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  ownerId String
+  owner   User   @relation("UserLists", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  order Float @default(0) // ← ADD THIS
+
   tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Task {
@@ -56,9 +69,14 @@ model Task {
   assigneeId String?
   assignee   User?   @relation("UserTasks", fields: [assigneeId], references: [id])
 
+  ownerId String
+  owner   User   @relation("OwnedTasks", fields: [ownerId], references: [id], onDelete: Cascade)
+
   parentId String?
   parent   Task?   @relation("Subtasks", fields: [parentId], references: [id])
   subtasks Task[]  @relation("Subtasks")
+
+  order Float @default(0) // ← ADD THIS
 
   comments  Comment[]
   createdAt DateTime  @default(now())

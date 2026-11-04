@@ -1260,11 +1260,17 @@ export namespace Prisma {
   export type UserCountOutputType = {
     tasks: number
     comments: number
+    projects: number
+    lists: number
+    ownedTasks: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tasks?: boolean | UserCountOutputTypeCountTasksArgs
     comments?: boolean | UserCountOutputTypeCountCommentsArgs
+    projects?: boolean | UserCountOutputTypeCountProjectsArgs
+    lists?: boolean | UserCountOutputTypeCountListsArgs
+    ownedTasks?: boolean | UserCountOutputTypeCountOwnedTasksArgs
   }
 
   // Custom InputTypes
@@ -1290,6 +1296,27 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CommentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ListWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOwnedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
   }
 
 
@@ -1417,7 +1444,6 @@ export namespace Prisma {
     avatar: string | null
     googleId: string | null
     provider: string | null
-    refreshToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1430,7 +1456,6 @@ export namespace Prisma {
     avatar: string | null
     googleId: string | null
     provider: string | null
-    refreshToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1443,7 +1468,6 @@ export namespace Prisma {
     avatar: number
     googleId: number
     provider: number
-    refreshToken: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1458,7 +1482,6 @@ export namespace Prisma {
     avatar?: true
     googleId?: true
     provider?: true
-    refreshToken?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1471,7 +1494,6 @@ export namespace Prisma {
     avatar?: true
     googleId?: true
     provider?: true
-    refreshToken?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1484,7 +1506,6 @@ export namespace Prisma {
     avatar?: true
     googleId?: true
     provider?: true
-    refreshToken?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1570,7 +1591,6 @@ export namespace Prisma {
     avatar: string | null
     googleId: string | null
     provider: string
-    refreshToken: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1600,11 +1620,13 @@ export namespace Prisma {
     avatar?: boolean
     googleId?: boolean
     provider?: boolean
-    refreshToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tasks?: boolean | User$tasksArgs<ExtArgs>
     comments?: boolean | User$commentsArgs<ExtArgs>
+    projects?: boolean | User$projectsArgs<ExtArgs>
+    lists?: boolean | User$listsArgs<ExtArgs>
+    ownedTasks?: boolean | User$ownedTasksArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1616,7 +1638,6 @@ export namespace Prisma {
     avatar?: boolean
     googleId?: boolean
     provider?: boolean
-    refreshToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1629,7 +1650,6 @@ export namespace Prisma {
     avatar?: boolean
     googleId?: boolean
     provider?: boolean
-    refreshToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1642,15 +1662,17 @@ export namespace Prisma {
     avatar?: boolean
     googleId?: boolean
     provider?: boolean
-    refreshToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "avatar" | "googleId" | "provider" | "refreshToken" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "avatar" | "googleId" | "provider" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tasks?: boolean | User$tasksArgs<ExtArgs>
     comments?: boolean | User$commentsArgs<ExtArgs>
+    projects?: boolean | User$projectsArgs<ExtArgs>
+    lists?: boolean | User$listsArgs<ExtArgs>
+    ownedTasks?: boolean | User$ownedTasksArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1661,6 +1683,9 @@ export namespace Prisma {
     objects: {
       tasks: Prisma.$TaskPayload<ExtArgs>[]
       comments: Prisma.$CommentPayload<ExtArgs>[]
+      projects: Prisma.$ProjectPayload<ExtArgs>[]
+      lists: Prisma.$ListPayload<ExtArgs>[]
+      ownedTasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1670,7 +1695,6 @@ export namespace Prisma {
       avatar: string | null
       googleId: string | null
       provider: string
-      refreshToken: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2069,6 +2093,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tasks<T extends User$tasksArgs<ExtArgs> = {}>(args?: Subset<T, User$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     comments<T extends User$commentsArgs<ExtArgs> = {}>(args?: Subset<T, User$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    lists<T extends User$listsArgs<ExtArgs> = {}>(args?: Subset<T, User$listsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedTasks<T extends User$ownedTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2105,7 +2132,6 @@ export namespace Prisma {
     readonly avatar: FieldRef<"User", 'String'>
     readonly googleId: FieldRef<"User", 'String'>
     readonly provider: FieldRef<"User", 'String'>
-    readonly refreshToken: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -2549,6 +2575,78 @@ export namespace Prisma {
   }
 
   /**
+   * User.projects
+   */
+  export type User$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    cursor?: ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * User.lists
+   */
+  export type User$listsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the List
+     */
+    select?: ListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the List
+     */
+    omit?: ListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ListInclude<ExtArgs> | null
+    where?: ListWhereInput
+    orderBy?: ListOrderByWithRelationInput | ListOrderByWithRelationInput[]
+    cursor?: ListWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ListScalarFieldEnum | ListScalarFieldEnum[]
+  }
+
+  /**
+   * User.ownedTasks
+   */
+  export type User$ownedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Task
+     */
+    omit?: TaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2581,21 +2679,30 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
+    color: string | null
+    ownerId: string | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ProjectMaxAggregateOutputType = {
     id: string | null
     name: string | null
     description: string | null
+    color: string | null
+    ownerId: string | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ProjectCountAggregateOutputType = {
     id: number
     name: number
     description: number
+    color: number
+    ownerId: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -2604,21 +2711,30 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    color?: true
+    ownerId?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type ProjectMaxAggregateInputType = {
     id?: true
     name?: true
     description?: true
+    color?: true
+    ownerId?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type ProjectCountAggregateInputType = {
     id?: true
     name?: true
     description?: true
+    color?: true
+    ownerId?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -2698,7 +2814,10 @@ export namespace Prisma {
     id: string
     name: string
     description: string | null
+    color: string
+    ownerId: string
     createdAt: Date
+    updatedAt: Date
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -2722,7 +2841,11 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    color?: boolean
+    ownerId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     lists?: boolean | Project$listsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -2731,41 +2854,61 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    color?: boolean
+    ownerId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     description?: boolean
+    color?: boolean
+    ownerId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
     id?: boolean
     name?: boolean
     description?: boolean
+    color?: boolean
+    ownerId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "createdAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "color" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     lists?: boolean | Project$listsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
+      owner: Prisma.$UserPayload<ExtArgs>
       lists: Prisma.$ListPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       description: string | null
+      color: string
+      ownerId: string
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -3160,6 +3303,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     lists<T extends Project$listsArgs<ExtArgs> = {}>(args?: Subset<T, Project$listsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3193,7 +3337,10 @@ export namespace Prisma {
     readonly id: FieldRef<"Project", 'String'>
     readonly name: FieldRef<"Project", 'String'>
     readonly description: FieldRef<"Project", 'String'>
+    readonly color: FieldRef<"Project", 'String'>
+    readonly ownerId: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
+    readonly updatedAt: FieldRef<"Project", 'DateTime'>
   }
     
 
@@ -3448,6 +3595,10 @@ export namespace Prisma {
      */
     data: ProjectCreateManyInput | ProjectCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3518,6 +3669,10 @@ export namespace Prisma {
      * Limit how many Projects to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3635,46 +3790,88 @@ export namespace Prisma {
 
   export type AggregateList = {
     _count: ListCountAggregateOutputType | null
+    _avg: ListAvgAggregateOutputType | null
+    _sum: ListSumAggregateOutputType | null
     _min: ListMinAggregateOutputType | null
     _max: ListMaxAggregateOutputType | null
+  }
+
+  export type ListAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type ListSumAggregateOutputType = {
+    order: number | null
   }
 
   export type ListMinAggregateOutputType = {
     id: string | null
     name: string | null
     projectId: string | null
+    ownerId: string | null
+    order: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ListMaxAggregateOutputType = {
     id: string | null
     name: string | null
     projectId: string | null
+    ownerId: string | null
+    order: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ListCountAggregateOutputType = {
     id: number
     name: number
     projectId: number
+    ownerId: number
+    order: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
+
+  export type ListAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type ListSumAggregateInputType = {
+    order?: true
+  }
 
   export type ListMinAggregateInputType = {
     id?: true
     name?: true
     projectId?: true
+    ownerId?: true
+    order?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type ListMaxAggregateInputType = {
     id?: true
     name?: true
     projectId?: true
+    ownerId?: true
+    order?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type ListCountAggregateInputType = {
     id?: true
     name?: true
     projectId?: true
+    ownerId?: true
+    order?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3716,6 +3913,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ListAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ListSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ListMinAggregateInputType
@@ -3746,6 +3955,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ListCountAggregateInputType | true
+    _avg?: ListAvgAggregateInputType
+    _sum?: ListSumAggregateInputType
     _min?: ListMinAggregateInputType
     _max?: ListMaxAggregateInputType
   }
@@ -3754,7 +3965,13 @@ export namespace Prisma {
     id: string
     name: string
     projectId: string
+    ownerId: string
+    order: number
+    createdAt: Date
+    updatedAt: Date
     _count: ListCountAggregateOutputType | null
+    _avg: ListAvgAggregateOutputType | null
+    _sum: ListSumAggregateOutputType | null
     _min: ListMinAggregateOutputType | null
     _max: ListMaxAggregateOutputType | null
   }
@@ -3777,7 +3994,12 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     projectId?: boolean
+    ownerId?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     tasks?: boolean | List$tasksArgs<ExtArgs>
     _count?: boolean | ListCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["list"]>
@@ -3786,45 +4008,67 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     projectId?: boolean
+    ownerId?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["list"]>
 
   export type ListSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     projectId?: boolean
+    ownerId?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["list"]>
 
   export type ListSelectScalar = {
     id?: boolean
     name?: boolean
     projectId?: boolean
+    ownerId?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type ListOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "projectId", ExtArgs["result"]["list"]>
+  export type ListOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "projectId" | "ownerId" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["list"]>
   export type ListInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     tasks?: boolean | List$tasksArgs<ExtArgs>
     _count?: boolean | ListCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ListIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ListIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $ListPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "List"
     objects: {
       project: Prisma.$ProjectPayload<ExtArgs>
+      owner: Prisma.$UserPayload<ExtArgs>
       tasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       projectId: string
+      ownerId: string
+      order: number
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["list"]>
     composites: {}
   }
@@ -4220,6 +4464,7 @@ export namespace Prisma {
   export interface Prisma__ListClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     tasks<T extends List$tasksArgs<ExtArgs> = {}>(args?: Subset<T, List$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4253,6 +4498,10 @@ export namespace Prisma {
     readonly id: FieldRef<"List", 'String'>
     readonly name: FieldRef<"List", 'String'>
     readonly projectId: FieldRef<"List", 'String'>
+    readonly ownerId: FieldRef<"List", 'String'>
+    readonly order: FieldRef<"List", 'Float'>
+    readonly createdAt: FieldRef<"List", 'DateTime'>
+    readonly updatedAt: FieldRef<"List", 'DateTime'>
   }
     
 
@@ -4702,8 +4951,18 @@ export namespace Prisma {
 
   export type AggregateTask = {
     _count: TaskCountAggregateOutputType | null
+    _avg: TaskAvgAggregateOutputType | null
+    _sum: TaskSumAggregateOutputType | null
     _min: TaskMinAggregateOutputType | null
     _max: TaskMaxAggregateOutputType | null
+  }
+
+  export type TaskAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TaskSumAggregateOutputType = {
+    order: number | null
   }
 
   export type TaskMinAggregateOutputType = {
@@ -4715,7 +4974,9 @@ export namespace Prisma {
     dueDate: Date | null
     listId: string | null
     assigneeId: string | null
+    ownerId: string | null
     parentId: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4729,7 +4990,9 @@ export namespace Prisma {
     dueDate: Date | null
     listId: string | null
     assigneeId: string | null
+    ownerId: string | null
     parentId: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4743,12 +5006,22 @@ export namespace Prisma {
     dueDate: number
     listId: number
     assigneeId: number
+    ownerId: number
     parentId: number
+    order: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type TaskAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TaskSumAggregateInputType = {
+    order?: true
+  }
 
   export type TaskMinAggregateInputType = {
     id?: true
@@ -4759,7 +5032,9 @@ export namespace Prisma {
     dueDate?: true
     listId?: true
     assigneeId?: true
+    ownerId?: true
     parentId?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4773,7 +5048,9 @@ export namespace Prisma {
     dueDate?: true
     listId?: true
     assigneeId?: true
+    ownerId?: true
     parentId?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4787,7 +5064,9 @@ export namespace Prisma {
     dueDate?: true
     listId?: true
     assigneeId?: true
+    ownerId?: true
     parentId?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -4831,6 +5110,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TaskAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TaskSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TaskMinAggregateInputType
@@ -4861,6 +5152,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TaskCountAggregateInputType | true
+    _avg?: TaskAvgAggregateInputType
+    _sum?: TaskSumAggregateInputType
     _min?: TaskMinAggregateInputType
     _max?: TaskMaxAggregateInputType
   }
@@ -4874,10 +5167,14 @@ export namespace Prisma {
     dueDate: Date | null
     listId: string
     assigneeId: string | null
+    ownerId: string
     parentId: string | null
+    order: number
     createdAt: Date
     updatedAt: Date
     _count: TaskCountAggregateOutputType | null
+    _avg: TaskAvgAggregateOutputType | null
+    _sum: TaskSumAggregateOutputType | null
     _min: TaskMinAggregateOutputType | null
     _max: TaskMaxAggregateOutputType | null
   }
@@ -4905,11 +5202,14 @@ export namespace Prisma {
     dueDate?: boolean
     listId?: boolean
     assigneeId?: boolean
+    ownerId?: boolean
     parentId?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     list?: boolean | ListDefaultArgs<ExtArgs>
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Task$parentArgs<ExtArgs>
     subtasks?: boolean | Task$subtasksArgs<ExtArgs>
     comments?: boolean | Task$commentsArgs<ExtArgs>
@@ -4925,11 +5225,14 @@ export namespace Prisma {
     dueDate?: boolean
     listId?: boolean
     assigneeId?: boolean
+    ownerId?: boolean
     parentId?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     list?: boolean | ListDefaultArgs<ExtArgs>
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Task$parentArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -4942,11 +5245,14 @@ export namespace Prisma {
     dueDate?: boolean
     listId?: boolean
     assigneeId?: boolean
+    ownerId?: boolean
     parentId?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     list?: boolean | ListDefaultArgs<ExtArgs>
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Task$parentArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -4959,15 +5265,18 @@ export namespace Prisma {
     dueDate?: boolean
     listId?: boolean
     assigneeId?: boolean
+    ownerId?: boolean
     parentId?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "dueDate" | "listId" | "assigneeId" | "parentId" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "dueDate" | "listId" | "assigneeId" | "ownerId" | "parentId" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     list?: boolean | ListDefaultArgs<ExtArgs>
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Task$parentArgs<ExtArgs>
     subtasks?: boolean | Task$subtasksArgs<ExtArgs>
     comments?: boolean | Task$commentsArgs<ExtArgs>
@@ -4976,11 +5285,13 @@ export namespace Prisma {
   export type TaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     list?: boolean | ListDefaultArgs<ExtArgs>
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Task$parentArgs<ExtArgs>
   }
   export type TaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     list?: boolean | ListDefaultArgs<ExtArgs>
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Task$parentArgs<ExtArgs>
   }
 
@@ -4989,6 +5300,7 @@ export namespace Prisma {
     objects: {
       list: Prisma.$ListPayload<ExtArgs>
       assignee: Prisma.$UserPayload<ExtArgs> | null
+      owner: Prisma.$UserPayload<ExtArgs>
       parent: Prisma.$TaskPayload<ExtArgs> | null
       subtasks: Prisma.$TaskPayload<ExtArgs>[]
       comments: Prisma.$CommentPayload<ExtArgs>[]
@@ -5002,7 +5314,9 @@ export namespace Prisma {
       dueDate: Date | null
       listId: string
       assigneeId: string | null
+      ownerId: string
       parentId: string | null
+      order: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["task"]>
@@ -5401,6 +5715,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     list<T extends ListDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ListDefaultArgs<ExtArgs>>): Prisma__ListClient<$Result.GetResult<Prisma.$ListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assignee<T extends Task$assigneeArgs<ExtArgs> = {}>(args?: Subset<T, Task$assigneeArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     parent<T extends Task$parentArgs<ExtArgs> = {}>(args?: Subset<T, Task$parentArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     subtasks<T extends Task$subtasksArgs<ExtArgs> = {}>(args?: Subset<T, Task$subtasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     comments<T extends Task$commentsArgs<ExtArgs> = {}>(args?: Subset<T, Task$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5441,7 +5756,9 @@ export namespace Prisma {
     readonly dueDate: FieldRef<"Task", 'DateTime'>
     readonly listId: FieldRef<"Task", 'String'>
     readonly assigneeId: FieldRef<"Task", 'String'>
+    readonly ownerId: FieldRef<"Task", 'String'>
     readonly parentId: FieldRef<"Task", 'String'>
+    readonly order: FieldRef<"Task", 'Float'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
   }
@@ -7042,7 +7359,6 @@ export namespace Prisma {
     avatar: 'avatar',
     googleId: 'googleId',
     provider: 'provider',
-    refreshToken: 'refreshToken',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7054,7 +7370,10 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     description: 'description',
-    createdAt: 'createdAt'
+    color: 'color',
+    ownerId: 'ownerId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -7063,7 +7382,11 @@ export namespace Prisma {
   export const ListScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    projectId: 'projectId'
+    projectId: 'projectId',
+    ownerId: 'ownerId',
+    order: 'order',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type ListScalarFieldEnum = (typeof ListScalarFieldEnum)[keyof typeof ListScalarFieldEnum]
@@ -7078,7 +7401,9 @@ export namespace Prisma {
     dueDate: 'dueDate',
     listId: 'listId',
     assigneeId: 'assigneeId',
+    ownerId: 'ownerId',
     parentId: 'parentId',
+    order: 'order',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7155,6 +7480,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -7182,11 +7521,13 @@ export namespace Prisma {
     avatar?: StringNullableFilter<"User"> | string | null
     googleId?: StringNullableFilter<"User"> | string | null
     provider?: StringFilter<"User"> | string
-    refreshToken?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     tasks?: TaskListRelationFilter
     comments?: CommentListRelationFilter
+    projects?: ProjectListRelationFilter
+    lists?: ListListRelationFilter
+    ownedTasks?: TaskListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -7197,11 +7538,13 @@ export namespace Prisma {
     avatar?: SortOrderInput | SortOrder
     googleId?: SortOrderInput | SortOrder
     provider?: SortOrder
-    refreshToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tasks?: TaskOrderByRelationAggregateInput
     comments?: CommentOrderByRelationAggregateInput
+    projects?: ProjectOrderByRelationAggregateInput
+    lists?: ListOrderByRelationAggregateInput
+    ownedTasks?: TaskOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7215,11 +7558,13 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     avatar?: StringNullableFilter<"User"> | string | null
     provider?: StringFilter<"User"> | string
-    refreshToken?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     tasks?: TaskListRelationFilter
     comments?: CommentListRelationFilter
+    projects?: ProjectListRelationFilter
+    lists?: ListListRelationFilter
+    ownedTasks?: TaskListRelationFilter
   }, "id" | "email" | "googleId">
 
   export type UserOrderByWithAggregationInput = {
@@ -7230,7 +7575,6 @@ export namespace Prisma {
     avatar?: SortOrderInput | SortOrder
     googleId?: SortOrderInput | SortOrder
     provider?: SortOrder
-    refreshToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -7249,7 +7593,6 @@ export namespace Prisma {
     avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
     googleId?: StringNullableWithAggregatesFilter<"User"> | string | null
     provider?: StringWithAggregatesFilter<"User"> | string
-    refreshToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -7261,7 +7604,11 @@ export namespace Prisma {
     id?: StringFilter<"Project"> | string
     name?: StringFilter<"Project"> | string
     description?: StringNullableFilter<"Project"> | string | null
+    color?: StringFilter<"Project"> | string
+    ownerId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     lists?: ListListRelationFilter
   }
 
@@ -7269,7 +7616,11 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    color?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    owner?: UserOrderByWithRelationInput
     lists?: ListOrderByRelationAggregateInput
   }
 
@@ -7280,7 +7631,11 @@ export namespace Prisma {
     NOT?: ProjectWhereInput | ProjectWhereInput[]
     name?: StringFilter<"Project"> | string
     description?: StringNullableFilter<"Project"> | string | null
+    color?: StringFilter<"Project"> | string
+    ownerId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     lists?: ListListRelationFilter
   }, "id">
 
@@ -7288,7 +7643,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    color?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -7301,7 +7659,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Project"> | string
     name?: StringWithAggregatesFilter<"Project"> | string
     description?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    color?: StringWithAggregatesFilter<"Project"> | string
+    ownerId?: StringWithAggregatesFilter<"Project"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
   }
 
   export type ListWhereInput = {
@@ -7311,7 +7672,12 @@ export namespace Prisma {
     id?: StringFilter<"List"> | string
     name?: StringFilter<"List"> | string
     projectId?: StringFilter<"List"> | string
+    ownerId?: StringFilter<"List"> | string
+    order?: FloatFilter<"List"> | number
+    createdAt?: DateTimeFilter<"List"> | Date | string
+    updatedAt?: DateTimeFilter<"List"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     tasks?: TaskListRelationFilter
   }
 
@@ -7319,7 +7685,12 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     projectId?: SortOrder
+    ownerId?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
+    owner?: UserOrderByWithRelationInput
     tasks?: TaskOrderByRelationAggregateInput
   }
 
@@ -7330,7 +7701,12 @@ export namespace Prisma {
     NOT?: ListWhereInput | ListWhereInput[]
     name?: StringFilter<"List"> | string
     projectId?: StringFilter<"List"> | string
+    ownerId?: StringFilter<"List"> | string
+    order?: FloatFilter<"List"> | number
+    createdAt?: DateTimeFilter<"List"> | Date | string
+    updatedAt?: DateTimeFilter<"List"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     tasks?: TaskListRelationFilter
   }, "id">
 
@@ -7338,9 +7714,15 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     projectId?: SortOrder
+    ownerId?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: ListCountOrderByAggregateInput
+    _avg?: ListAvgOrderByAggregateInput
     _max?: ListMaxOrderByAggregateInput
     _min?: ListMinOrderByAggregateInput
+    _sum?: ListSumOrderByAggregateInput
   }
 
   export type ListScalarWhereWithAggregatesInput = {
@@ -7350,6 +7732,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"List"> | string
     name?: StringWithAggregatesFilter<"List"> | string
     projectId?: StringWithAggregatesFilter<"List"> | string
+    ownerId?: StringWithAggregatesFilter<"List"> | string
+    order?: FloatWithAggregatesFilter<"List"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"List"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"List"> | Date | string
   }
 
   export type TaskWhereInput = {
@@ -7364,11 +7750,14 @@ export namespace Prisma {
     dueDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     listId?: StringFilter<"Task"> | string
     assigneeId?: StringNullableFilter<"Task"> | string | null
+    ownerId?: StringFilter<"Task"> | string
     parentId?: StringNullableFilter<"Task"> | string | null
+    order?: FloatFilter<"Task"> | number
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     list?: XOR<ListScalarRelationFilter, ListWhereInput>
     assignee?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     parent?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
     subtasks?: TaskListRelationFilter
     comments?: CommentListRelationFilter
@@ -7383,11 +7772,14 @@ export namespace Prisma {
     dueDate?: SortOrderInput | SortOrder
     listId?: SortOrder
     assigneeId?: SortOrderInput | SortOrder
+    ownerId?: SortOrder
     parentId?: SortOrderInput | SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     list?: ListOrderByWithRelationInput
     assignee?: UserOrderByWithRelationInput
+    owner?: UserOrderByWithRelationInput
     parent?: TaskOrderByWithRelationInput
     subtasks?: TaskOrderByRelationAggregateInput
     comments?: CommentOrderByRelationAggregateInput
@@ -7405,11 +7797,14 @@ export namespace Prisma {
     dueDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     listId?: StringFilter<"Task"> | string
     assigneeId?: StringNullableFilter<"Task"> | string | null
+    ownerId?: StringFilter<"Task"> | string
     parentId?: StringNullableFilter<"Task"> | string | null
+    order?: FloatFilter<"Task"> | number
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     list?: XOR<ListScalarRelationFilter, ListWhereInput>
     assignee?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     parent?: XOR<TaskNullableScalarRelationFilter, TaskWhereInput> | null
     subtasks?: TaskListRelationFilter
     comments?: CommentListRelationFilter
@@ -7424,12 +7819,16 @@ export namespace Prisma {
     dueDate?: SortOrderInput | SortOrder
     listId?: SortOrder
     assigneeId?: SortOrderInput | SortOrder
+    ownerId?: SortOrder
     parentId?: SortOrderInput | SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TaskCountOrderByAggregateInput
+    _avg?: TaskAvgOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
     _min?: TaskMinOrderByAggregateInput
+    _sum?: TaskSumOrderByAggregateInput
   }
 
   export type TaskScalarWhereWithAggregatesInput = {
@@ -7444,7 +7843,9 @@ export namespace Prisma {
     dueDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     listId?: StringWithAggregatesFilter<"Task"> | string
     assigneeId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    ownerId?: StringWithAggregatesFilter<"Task"> | string
     parentId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    order?: FloatWithAggregatesFilter<"Task"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
   }
@@ -7515,11 +7916,13 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tasks?: TaskCreateNestedManyWithoutAssigneeInput
     comments?: CommentCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutOwnerInput
+    lists?: ListCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -7530,11 +7933,13 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOwnerInput
+    lists?: ListUncheckedCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUpdateInput = {
@@ -7545,11 +7950,13 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUpdateManyWithoutAssigneeNestedInput
     comments?: CommentUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutOwnerNestedInput
+    lists?: ListUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -7560,11 +7967,13 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+    lists?: ListUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7575,7 +7984,6 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7588,7 +7996,6 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7601,7 +8008,6 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7610,7 +8016,10 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    color?: string
     createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutProjectsInput
     lists?: ListCreateNestedManyWithoutProjectInput
   }
 
@@ -7618,7 +8027,10 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    color?: string
+    ownerId: string
     createdAt?: Date | string
+    updatedAt?: Date | string
     lists?: ListUncheckedCreateNestedManyWithoutProjectInput
   }
 
@@ -7626,7 +8038,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutProjectsNestedInput
     lists?: ListUpdateManyWithoutProjectNestedInput
   }
 
@@ -7634,7 +8049,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lists?: ListUncheckedUpdateManyWithoutProjectNestedInput
   }
 
@@ -7642,27 +8060,39 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    color?: string
+    ownerId: string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ProjectUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ListCreateInput = {
     id?: string
     name: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutListsInput
+    owner: UserCreateNestedOneWithoutListsInput
     tasks?: TaskCreateNestedManyWithoutListInput
   }
 
@@ -7670,13 +8100,21 @@ export namespace Prisma {
     id?: string
     name: string
     projectId: string
+    ownerId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutListInput
   }
 
   export type ListUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutListsNestedInput
+    owner?: UserUpdateOneRequiredWithoutListsNestedInput
     tasks?: TaskUpdateManyWithoutListNestedInput
   }
 
@@ -7684,6 +8122,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutListNestedInput
   }
 
@@ -7691,17 +8133,28 @@ export namespace Prisma {
     id?: string
     name: string
     projectId: string
+    ownerId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ListUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ListUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TaskCreateInput = {
@@ -7711,10 +8164,12 @@ export namespace Prisma {
     status?: string
     priority?: string
     dueDate?: Date | string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     list: ListCreateNestedOneWithoutTasksInput
     assignee?: UserCreateNestedOneWithoutTasksInput
+    owner: UserCreateNestedOneWithoutOwnedTasksInput
     parent?: TaskCreateNestedOneWithoutSubtasksInput
     subtasks?: TaskCreateNestedManyWithoutParentInput
     comments?: CommentCreateNestedManyWithoutTaskInput
@@ -7729,7 +8184,9 @@ export namespace Prisma {
     dueDate?: Date | string | null
     listId: string
     assigneeId?: string | null
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     subtasks?: TaskUncheckedCreateNestedManyWithoutParentInput
@@ -7743,10 +8200,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     list?: ListUpdateOneRequiredWithoutTasksNestedInput
     assignee?: UserUpdateOneWithoutTasksNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedTasksNestedInput
     parent?: TaskUpdateOneWithoutSubtasksNestedInput
     subtasks?: TaskUpdateManyWithoutParentNestedInput
     comments?: CommentUpdateManyWithoutTaskNestedInput
@@ -7761,7 +8220,9 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subtasks?: TaskUncheckedUpdateManyWithoutParentNestedInput
@@ -7777,7 +8238,9 @@ export namespace Prisma {
     dueDate?: Date | string | null
     listId: string
     assigneeId?: string | null
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7789,6 +8252,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7802,7 +8266,9 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7914,6 +8380,18 @@ export namespace Prisma {
     none?: CommentWhereInput
   }
 
+  export type ProjectListRelationFilter = {
+    every?: ProjectWhereInput
+    some?: ProjectWhereInput
+    none?: ProjectWhereInput
+  }
+
+  export type ListListRelationFilter = {
+    every?: ListWhereInput
+    some?: ListWhereInput
+    none?: ListWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -7927,6 +8405,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ProjectOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ListOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
@@ -7935,7 +8421,6 @@ export namespace Prisma {
     avatar?: SortOrder
     googleId?: SortOrder
     provider?: SortOrder
-    refreshToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7948,7 +8433,6 @@ export namespace Prisma {
     avatar?: SortOrder
     googleId?: SortOrder
     provider?: SortOrder
-    refreshToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7961,7 +8445,6 @@ export namespace Prisma {
     avatar?: SortOrder
     googleId?: SortOrder
     provider?: SortOrder
-    refreshToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8016,35 +8499,50 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type ListListRelationFilter = {
-    every?: ListWhereInput
-    some?: ListWhereInput
-    none?: ListWhereInput
-  }
-
-  export type ListOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
   }
 
   export type ProjectCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    color?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    color?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    color?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type ProjectScalarRelationFilter = {
@@ -8056,18 +8554,54 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     projectId?: SortOrder
+    ownerId?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ListAvgOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type ListMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     projectId?: SortOrder
+    ownerId?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ListMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     projectId?: SortOrder
+    ownerId?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ListSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -8105,9 +8639,15 @@ export namespace Prisma {
     dueDate?: SortOrder
     listId?: SortOrder
     assigneeId?: SortOrder
+    ownerId?: SortOrder
     parentId?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TaskAvgOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type TaskMaxOrderByAggregateInput = {
@@ -8119,7 +8659,9 @@ export namespace Prisma {
     dueDate?: SortOrder
     listId?: SortOrder
     assigneeId?: SortOrder
+    ownerId?: SortOrder
     parentId?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8133,9 +8675,15 @@ export namespace Prisma {
     dueDate?: SortOrder
     listId?: SortOrder
     assigneeId?: SortOrder
+    ownerId?: SortOrder
     parentId?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TaskSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -8155,11 +8703,6 @@ export namespace Prisma {
   export type TaskScalarRelationFilter = {
     is?: TaskWhereInput
     isNot?: TaskWhereInput
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
   }
 
   export type CommentCountOrderByAggregateInput = {
@@ -8200,6 +8743,27 @@ export namespace Prisma {
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
+  export type ProjectCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<ProjectCreateWithoutOwnerInput, ProjectUncheckedCreateWithoutOwnerInput> | ProjectCreateWithoutOwnerInput[] | ProjectUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOwnerInput | ProjectCreateOrConnectWithoutOwnerInput[]
+    createMany?: ProjectCreateManyOwnerInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ListCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<ListCreateWithoutOwnerInput, ListUncheckedCreateWithoutOwnerInput> | ListCreateWithoutOwnerInput[] | ListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ListCreateOrConnectWithoutOwnerInput | ListCreateOrConnectWithoutOwnerInput[]
+    createMany?: ListCreateManyOwnerInputEnvelope
+    connect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+  }
+
+  export type TaskCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<TaskCreateWithoutOwnerInput, TaskUncheckedCreateWithoutOwnerInput> | TaskCreateWithoutOwnerInput[] | TaskUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutOwnerInput | TaskCreateOrConnectWithoutOwnerInput[]
+    createMany?: TaskCreateManyOwnerInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
   export type TaskUncheckedCreateNestedManyWithoutAssigneeInput = {
     create?: XOR<TaskCreateWithoutAssigneeInput, TaskUncheckedCreateWithoutAssigneeInput> | TaskCreateWithoutAssigneeInput[] | TaskUncheckedCreateWithoutAssigneeInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutAssigneeInput | TaskCreateOrConnectWithoutAssigneeInput[]
@@ -8212,6 +8776,27 @@ export namespace Prisma {
     connectOrCreate?: CommentCreateOrConnectWithoutUserInput | CommentCreateOrConnectWithoutUserInput[]
     createMany?: CommentCreateManyUserInputEnvelope
     connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+  }
+
+  export type ProjectUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<ProjectCreateWithoutOwnerInput, ProjectUncheckedCreateWithoutOwnerInput> | ProjectCreateWithoutOwnerInput[] | ProjectUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOwnerInput | ProjectCreateOrConnectWithoutOwnerInput[]
+    createMany?: ProjectCreateManyOwnerInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ListUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<ListCreateWithoutOwnerInput, ListUncheckedCreateWithoutOwnerInput> | ListCreateWithoutOwnerInput[] | ListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ListCreateOrConnectWithoutOwnerInput | ListCreateOrConnectWithoutOwnerInput[]
+    createMany?: ListCreateManyOwnerInputEnvelope
+    connect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<TaskCreateWithoutOwnerInput, TaskUncheckedCreateWithoutOwnerInput> | TaskCreateWithoutOwnerInput[] | TaskUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutOwnerInput | TaskCreateOrConnectWithoutOwnerInput[]
+    createMany?: TaskCreateManyOwnerInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -8254,6 +8839,48 @@ export namespace Prisma {
     deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
   }
 
+  export type ProjectUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<ProjectCreateWithoutOwnerInput, ProjectUncheckedCreateWithoutOwnerInput> | ProjectCreateWithoutOwnerInput[] | ProjectUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOwnerInput | ProjectCreateOrConnectWithoutOwnerInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutOwnerInput | ProjectUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: ProjectCreateManyOwnerInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutOwnerInput | ProjectUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutOwnerInput | ProjectUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ListUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<ListCreateWithoutOwnerInput, ListUncheckedCreateWithoutOwnerInput> | ListCreateWithoutOwnerInput[] | ListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ListCreateOrConnectWithoutOwnerInput | ListCreateOrConnectWithoutOwnerInput[]
+    upsert?: ListUpsertWithWhereUniqueWithoutOwnerInput | ListUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: ListCreateManyOwnerInputEnvelope
+    set?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    disconnect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    delete?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    connect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    update?: ListUpdateWithWhereUniqueWithoutOwnerInput | ListUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: ListUpdateManyWithWhereWithoutOwnerInput | ListUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: ListScalarWhereInput | ListScalarWhereInput[]
+  }
+
+  export type TaskUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<TaskCreateWithoutOwnerInput, TaskUncheckedCreateWithoutOwnerInput> | TaskCreateWithoutOwnerInput[] | TaskUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutOwnerInput | TaskCreateOrConnectWithoutOwnerInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutOwnerInput | TaskUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: TaskCreateManyOwnerInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutOwnerInput | TaskUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutOwnerInput | TaskUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
   export type TaskUncheckedUpdateManyWithoutAssigneeNestedInput = {
     create?: XOR<TaskCreateWithoutAssigneeInput, TaskUncheckedCreateWithoutAssigneeInput> | TaskCreateWithoutAssigneeInput[] | TaskUncheckedCreateWithoutAssigneeInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutAssigneeInput | TaskCreateOrConnectWithoutAssigneeInput[]
@@ -8282,6 +8909,54 @@ export namespace Prisma {
     deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
   }
 
+  export type ProjectUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<ProjectCreateWithoutOwnerInput, ProjectUncheckedCreateWithoutOwnerInput> | ProjectCreateWithoutOwnerInput[] | ProjectUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOwnerInput | ProjectCreateOrConnectWithoutOwnerInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutOwnerInput | ProjectUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: ProjectCreateManyOwnerInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutOwnerInput | ProjectUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutOwnerInput | ProjectUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ListUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<ListCreateWithoutOwnerInput, ListUncheckedCreateWithoutOwnerInput> | ListCreateWithoutOwnerInput[] | ListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: ListCreateOrConnectWithoutOwnerInput | ListCreateOrConnectWithoutOwnerInput[]
+    upsert?: ListUpsertWithWhereUniqueWithoutOwnerInput | ListUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: ListCreateManyOwnerInputEnvelope
+    set?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    disconnect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    delete?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    connect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+    update?: ListUpdateWithWhereUniqueWithoutOwnerInput | ListUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: ListUpdateManyWithWhereWithoutOwnerInput | ListUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: ListScalarWhereInput | ListScalarWhereInput[]
+  }
+
+  export type TaskUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<TaskCreateWithoutOwnerInput, TaskUncheckedCreateWithoutOwnerInput> | TaskCreateWithoutOwnerInput[] | TaskUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutOwnerInput | TaskCreateOrConnectWithoutOwnerInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutOwnerInput | TaskUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: TaskCreateManyOwnerInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutOwnerInput | TaskUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutOwnerInput | TaskUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ListCreateNestedManyWithoutProjectInput = {
     create?: XOR<ListCreateWithoutProjectInput, ListUncheckedCreateWithoutProjectInput> | ListCreateWithoutProjectInput[] | ListUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ListCreateOrConnectWithoutProjectInput | ListCreateOrConnectWithoutProjectInput[]
@@ -8294,6 +8969,14 @@ export namespace Prisma {
     connectOrCreate?: ListCreateOrConnectWithoutProjectInput | ListCreateOrConnectWithoutProjectInput[]
     createMany?: ListCreateManyProjectInputEnvelope
     connect?: ListWhereUniqueInput | ListWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
+    create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
+    upsert?: UserUpsertWithoutProjectsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectsInput, UserUpdateWithoutProjectsInput>, UserUncheckedUpdateWithoutProjectsInput>
   }
 
   export type ListUpdateManyWithoutProjectNestedInput = {
@@ -8330,6 +9013,12 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutListsInput = {
+    create?: XOR<UserCreateWithoutListsInput, UserUncheckedCreateWithoutListsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutListsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type TaskCreateNestedManyWithoutListInput = {
     create?: XOR<TaskCreateWithoutListInput, TaskUncheckedCreateWithoutListInput> | TaskCreateWithoutListInput[] | TaskUncheckedCreateWithoutListInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutListInput | TaskCreateOrConnectWithoutListInput[]
@@ -8344,12 +9033,28 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type ProjectUpdateOneRequiredWithoutListsNestedInput = {
     create?: XOR<ProjectCreateWithoutListsInput, ProjectUncheckedCreateWithoutListsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutListsInput
     upsert?: ProjectUpsertWithoutListsInput
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutListsInput, ProjectUpdateWithoutListsInput>, ProjectUncheckedUpdateWithoutListsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutListsNestedInput = {
+    create?: XOR<UserCreateWithoutListsInput, UserUncheckedCreateWithoutListsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutListsInput
+    upsert?: UserUpsertWithoutListsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutListsInput, UserUpdateWithoutListsInput>, UserUncheckedUpdateWithoutListsInput>
   }
 
   export type TaskUpdateManyWithoutListNestedInput = {
@@ -8389,6 +9094,12 @@ export namespace Prisma {
   export type UserCreateNestedOneWithoutTasksInput = {
     create?: XOR<UserCreateWithoutTasksInput, UserUncheckedCreateWithoutTasksInput>
     connectOrCreate?: UserCreateOrConnectWithoutTasksInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutOwnedTasksInput = {
+    create?: XOR<UserCreateWithoutOwnedTasksInput, UserUncheckedCreateWithoutOwnedTasksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedTasksInput
     connect?: UserWhereUniqueInput
   }
 
@@ -8446,6 +9157,14 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTasksInput, UserUpdateWithoutTasksInput>, UserUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutOwnedTasksNestedInput = {
+    create?: XOR<UserCreateWithoutOwnedTasksInput, UserUncheckedCreateWithoutOwnedTasksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedTasksInput
+    upsert?: UserUpsertWithoutOwnedTasksInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedTasksInput, UserUpdateWithoutOwnedTasksInput>, UserUncheckedUpdateWithoutOwnedTasksInput>
   }
 
   export type TaskUpdateOneWithoutSubtasksNestedInput = {
@@ -8651,6 +9370,33 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -8683,9 +9429,11 @@ export namespace Prisma {
     status?: string
     priority?: string
     dueDate?: Date | string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     list: ListCreateNestedOneWithoutTasksInput
+    owner: UserCreateNestedOneWithoutOwnedTasksInput
     parent?: TaskCreateNestedOneWithoutSubtasksInput
     subtasks?: TaskCreateNestedManyWithoutParentInput
     comments?: CommentCreateNestedManyWithoutTaskInput
@@ -8699,7 +9447,9 @@ export namespace Prisma {
     priority?: string
     dueDate?: Date | string | null
     listId: string
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     subtasks?: TaskUncheckedCreateNestedManyWithoutParentInput
@@ -8740,6 +9490,110 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProjectCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    description?: string | null
+    color?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lists?: ListCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    description?: string | null
+    color?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lists?: ListUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutOwnerInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutOwnerInput, ProjectUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type ProjectCreateManyOwnerInputEnvelope = {
+    data: ProjectCreateManyOwnerInput | ProjectCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ListCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutListsInput
+    tasks?: TaskCreateNestedManyWithoutListInput
+  }
+
+  export type ListUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    projectId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskUncheckedCreateNestedManyWithoutListInput
+  }
+
+  export type ListCreateOrConnectWithoutOwnerInput = {
+    where: ListWhereUniqueInput
+    create: XOR<ListCreateWithoutOwnerInput, ListUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type ListCreateManyOwnerInputEnvelope = {
+    data: ListCreateManyOwnerInput | ListCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaskCreateWithoutOwnerInput = {
+    id?: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    dueDate?: Date | string | null
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    list: ListCreateNestedOneWithoutTasksInput
+    assignee?: UserCreateNestedOneWithoutTasksInput
+    parent?: TaskCreateNestedOneWithoutSubtasksInput
+    subtasks?: TaskCreateNestedManyWithoutParentInput
+    comments?: CommentCreateNestedManyWithoutTaskInput
+  }
+
+  export type TaskUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    dueDate?: Date | string | null
+    listId: string
+    assigneeId?: string | null
+    parentId?: string | null
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subtasks?: TaskUncheckedCreateNestedManyWithoutParentInput
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type TaskCreateOrConnectWithoutOwnerInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutOwnerInput, TaskUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type TaskCreateManyOwnerInputEnvelope = {
+    data: TaskCreateManyOwnerInput | TaskCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TaskUpsertWithWhereUniqueWithoutAssigneeInput = {
     where: TaskWhereUniqueInput
     update: XOR<TaskUpdateWithoutAssigneeInput, TaskUncheckedUpdateWithoutAssigneeInput>
@@ -8768,7 +9622,9 @@ export namespace Prisma {
     dueDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     listId?: StringFilter<"Task"> | string
     assigneeId?: StringNullableFilter<"Task"> | string | null
+    ownerId?: StringFilter<"Task"> | string
     parentId?: StringNullableFilter<"Task"> | string | null
+    order?: FloatFilter<"Task"> | number
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
   }
@@ -8800,15 +9656,134 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Comment"> | Date | string
   }
 
+  export type ProjectUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: ProjectWhereUniqueInput
+    update: XOR<ProjectUpdateWithoutOwnerInput, ProjectUncheckedUpdateWithoutOwnerInput>
+    create: XOR<ProjectCreateWithoutOwnerInput, ProjectUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type ProjectUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: ProjectWhereUniqueInput
+    data: XOR<ProjectUpdateWithoutOwnerInput, ProjectUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type ProjectUpdateManyWithWhereWithoutOwnerInput = {
+    where: ProjectScalarWhereInput
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type ProjectScalarWhereInput = {
+    AND?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    OR?: ProjectScalarWhereInput[]
+    NOT?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    id?: StringFilter<"Project"> | string
+    name?: StringFilter<"Project"> | string
+    description?: StringNullableFilter<"Project"> | string | null
+    color?: StringFilter<"Project"> | string
+    ownerId?: StringFilter<"Project"> | string
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+  }
+
+  export type ListUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: ListWhereUniqueInput
+    update: XOR<ListUpdateWithoutOwnerInput, ListUncheckedUpdateWithoutOwnerInput>
+    create: XOR<ListCreateWithoutOwnerInput, ListUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type ListUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: ListWhereUniqueInput
+    data: XOR<ListUpdateWithoutOwnerInput, ListUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type ListUpdateManyWithWhereWithoutOwnerInput = {
+    where: ListScalarWhereInput
+    data: XOR<ListUpdateManyMutationInput, ListUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type ListScalarWhereInput = {
+    AND?: ListScalarWhereInput | ListScalarWhereInput[]
+    OR?: ListScalarWhereInput[]
+    NOT?: ListScalarWhereInput | ListScalarWhereInput[]
+    id?: StringFilter<"List"> | string
+    name?: StringFilter<"List"> | string
+    projectId?: StringFilter<"List"> | string
+    ownerId?: StringFilter<"List"> | string
+    order?: FloatFilter<"List"> | number
+    createdAt?: DateTimeFilter<"List"> | Date | string
+    updatedAt?: DateTimeFilter<"List"> | Date | string
+  }
+
+  export type TaskUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutOwnerInput, TaskUncheckedUpdateWithoutOwnerInput>
+    create: XOR<TaskCreateWithoutOwnerInput, TaskUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutOwnerInput, TaskUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutOwnerInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type UserCreateWithoutProjectsInput = {
+    id?: string
+    email: string
+    password?: string | null
+    name: string
+    avatar?: string | null
+    googleId?: string | null
+    provider?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskCreateNestedManyWithoutAssigneeInput
+    comments?: CommentCreateNestedManyWithoutUserInput
+    lists?: ListCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutProjectsInput = {
+    id?: string
+    email: string
+    password?: string | null
+    name: string
+    avatar?: string | null
+    googleId?: string | null
+    provider?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    comments?: CommentUncheckedCreateNestedManyWithoutUserInput
+    lists?: ListUncheckedCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutProjectsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
+  }
+
   export type ListCreateWithoutProjectInput = {
     id?: string
     name: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutListsInput
     tasks?: TaskCreateNestedManyWithoutListInput
   }
 
   export type ListUncheckedCreateWithoutProjectInput = {
     id?: string
     name: string
+    ownerId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutListInput
   }
 
@@ -8820,6 +9795,49 @@ export namespace Prisma {
   export type ListCreateManyProjectInputEnvelope = {
     data: ListCreateManyProjectInput | ListCreateManyProjectInput[]
     skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutProjectsInput = {
+    update: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
+    create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type UserUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    comments?: CommentUpdateManyWithoutUserNestedInput
+    lists?: ListUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
+    lists?: ListUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type ListUpsertWithWhereUniqueWithoutProjectInput = {
@@ -8838,32 +9856,66 @@ export namespace Prisma {
     data: XOR<ListUpdateManyMutationInput, ListUncheckedUpdateManyWithoutProjectInput>
   }
 
-  export type ListScalarWhereInput = {
-    AND?: ListScalarWhereInput | ListScalarWhereInput[]
-    OR?: ListScalarWhereInput[]
-    NOT?: ListScalarWhereInput | ListScalarWhereInput[]
-    id?: StringFilter<"List"> | string
-    name?: StringFilter<"List"> | string
-    projectId?: StringFilter<"List"> | string
-  }
-
   export type ProjectCreateWithoutListsInput = {
     id?: string
     name: string
     description?: string | null
+    color?: string
     createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutProjectsInput
   }
 
   export type ProjectUncheckedCreateWithoutListsInput = {
     id?: string
     name: string
     description?: string | null
+    color?: string
+    ownerId: string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ProjectCreateOrConnectWithoutListsInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutListsInput, ProjectUncheckedCreateWithoutListsInput>
+  }
+
+  export type UserCreateWithoutListsInput = {
+    id?: string
+    email: string
+    password?: string | null
+    name: string
+    avatar?: string | null
+    googleId?: string | null
+    provider?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskCreateNestedManyWithoutAssigneeInput
+    comments?: CommentCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutListsInput = {
+    id?: string
+    email: string
+    password?: string | null
+    name: string
+    avatar?: string | null
+    googleId?: string | null
+    provider?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    comments?: CommentUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutListsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutListsInput, UserUncheckedCreateWithoutListsInput>
   }
 
   export type TaskCreateWithoutListInput = {
@@ -8873,9 +9925,11 @@ export namespace Prisma {
     status?: string
     priority?: string
     dueDate?: Date | string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     assignee?: UserCreateNestedOneWithoutTasksInput
+    owner: UserCreateNestedOneWithoutOwnedTasksInput
     parent?: TaskCreateNestedOneWithoutSubtasksInput
     subtasks?: TaskCreateNestedManyWithoutParentInput
     comments?: CommentCreateNestedManyWithoutTaskInput
@@ -8889,7 +9943,9 @@ export namespace Prisma {
     priority?: string
     dueDate?: Date | string | null
     assigneeId?: string | null
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     subtasks?: TaskUncheckedCreateNestedManyWithoutParentInput
@@ -8921,14 +9977,63 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutProjectsNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutListsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpsertWithoutListsInput = {
+    update: XOR<UserUpdateWithoutListsInput, UserUncheckedUpdateWithoutListsInput>
+    create: XOR<UserCreateWithoutListsInput, UserUncheckedCreateWithoutListsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutListsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutListsInput, UserUncheckedUpdateWithoutListsInput>
+  }
+
+  export type UserUpdateWithoutListsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    comments?: CommentUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutListsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutListInput = {
@@ -8950,13 +10055,21 @@ export namespace Prisma {
   export type ListCreateWithoutTasksInput = {
     id?: string
     name: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutListsInput
+    owner: UserCreateNestedOneWithoutListsInput
   }
 
   export type ListUncheckedCreateWithoutTasksInput = {
     id?: string
     name: string
     projectId: string
+    ownerId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ListCreateOrConnectWithoutTasksInput = {
@@ -8972,10 +10085,12 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutOwnerInput
+    lists?: ListCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -8986,15 +10101,54 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOwnerInput
+    lists?: ListUncheckedCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutTasksInput, UserUncheckedCreateWithoutTasksInput>
+  }
+
+  export type UserCreateWithoutOwnedTasksInput = {
+    id?: string
+    email: string
+    password?: string | null
+    name: string
+    avatar?: string | null
+    googleId?: string | null
+    provider?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskCreateNestedManyWithoutAssigneeInput
+    comments?: CommentCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutOwnerInput
+    lists?: ListCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutOwnedTasksInput = {
+    id?: string
+    email: string
+    password?: string | null
+    name: string
+    avatar?: string | null
+    googleId?: string | null
+    provider?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    comments?: CommentUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOwnerInput
+    lists?: ListUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutOwnedTasksInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOwnedTasksInput, UserUncheckedCreateWithoutOwnedTasksInput>
   }
 
   export type TaskCreateWithoutSubtasksInput = {
@@ -9004,10 +10158,12 @@ export namespace Prisma {
     status?: string
     priority?: string
     dueDate?: Date | string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     list: ListCreateNestedOneWithoutTasksInput
     assignee?: UserCreateNestedOneWithoutTasksInput
+    owner: UserCreateNestedOneWithoutOwnedTasksInput
     parent?: TaskCreateNestedOneWithoutSubtasksInput
     comments?: CommentCreateNestedManyWithoutTaskInput
   }
@@ -9021,7 +10177,9 @@ export namespace Prisma {
     dueDate?: Date | string | null
     listId: string
     assigneeId?: string | null
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
@@ -9039,10 +10197,12 @@ export namespace Prisma {
     status?: string
     priority?: string
     dueDate?: Date | string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     list: ListCreateNestedOneWithoutTasksInput
     assignee?: UserCreateNestedOneWithoutTasksInput
+    owner: UserCreateNestedOneWithoutOwnedTasksInput
     subtasks?: TaskCreateNestedManyWithoutParentInput
     comments?: CommentCreateNestedManyWithoutTaskInput
   }
@@ -9056,6 +10216,8 @@ export namespace Prisma {
     dueDate?: Date | string | null
     listId: string
     assigneeId?: string | null
+    ownerId: string
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     subtasks?: TaskUncheckedCreateNestedManyWithoutParentInput
@@ -9110,13 +10272,21 @@ export namespace Prisma {
   export type ListUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutListsNestedInput
+    owner?: UserUpdateOneRequiredWithoutListsNestedInput
   }
 
   export type ListUncheckedUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUpsertWithoutTasksInput = {
@@ -9138,10 +10308,12 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutOwnerNestedInput
+    lists?: ListUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -9152,10 +10324,55 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+    lists?: ListUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUpsertWithoutOwnedTasksInput = {
+    update: XOR<UserUpdateWithoutOwnedTasksInput, UserUncheckedUpdateWithoutOwnedTasksInput>
+    create: XOR<UserCreateWithoutOwnedTasksInput, UserUncheckedCreateWithoutOwnedTasksInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOwnedTasksInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOwnedTasksInput, UserUncheckedUpdateWithoutOwnedTasksInput>
+  }
+
+  export type UserUpdateWithoutOwnedTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    comments?: CommentUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutOwnerNestedInput
+    lists?: ListUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOwnedTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+    lists?: ListUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type TaskUpsertWithoutSubtasksInput = {
@@ -9176,10 +10393,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     list?: ListUpdateOneRequiredWithoutTasksNestedInput
     assignee?: UserUpdateOneWithoutTasksNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedTasksNestedInput
     parent?: TaskUpdateOneWithoutSubtasksNestedInput
     comments?: CommentUpdateManyWithoutTaskNestedInput
   }
@@ -9193,7 +10412,9 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
@@ -9238,10 +10459,12 @@ export namespace Prisma {
     status?: string
     priority?: string
     dueDate?: Date | string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     list: ListCreateNestedOneWithoutTasksInput
     assignee?: UserCreateNestedOneWithoutTasksInput
+    owner: UserCreateNestedOneWithoutOwnedTasksInput
     parent?: TaskCreateNestedOneWithoutSubtasksInput
     subtasks?: TaskCreateNestedManyWithoutParentInput
   }
@@ -9255,7 +10478,9 @@ export namespace Prisma {
     dueDate?: Date | string | null
     listId: string
     assigneeId?: string | null
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     subtasks?: TaskUncheckedCreateNestedManyWithoutParentInput
@@ -9274,10 +10499,12 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tasks?: TaskCreateNestedManyWithoutAssigneeInput
+    projects?: ProjectCreateNestedManyWithoutOwnerInput
+    lists?: ListCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutCommentsInput = {
@@ -9288,10 +10515,12 @@ export namespace Prisma {
     avatar?: string | null
     googleId?: string | null
     provider?: string
-    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOwnerInput
+    lists?: ListUncheckedCreateNestedManyWithoutOwnerInput
+    ownedTasks?: TaskUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutCommentsInput = {
@@ -9317,10 +10546,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     list?: ListUpdateOneRequiredWithoutTasksNestedInput
     assignee?: UserUpdateOneWithoutTasksNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedTasksNestedInput
     parent?: TaskUpdateOneWithoutSubtasksNestedInput
     subtasks?: TaskUpdateManyWithoutParentNestedInput
   }
@@ -9334,7 +10565,9 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subtasks?: TaskUncheckedUpdateManyWithoutParentNestedInput
@@ -9359,10 +10592,12 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    projects?: ProjectUpdateManyWithoutOwnerNestedInput
+    lists?: ListUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommentsInput = {
@@ -9373,10 +10608,12 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     googleId?: NullableStringFieldUpdateOperationsInput | string | null
     provider?: StringFieldUpdateOperationsInput | string
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOwnerNestedInput
+    lists?: ListUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedTasks?: TaskUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type TaskCreateManyAssigneeInput = {
@@ -9387,7 +10624,9 @@ export namespace Prisma {
     priority?: string
     dueDate?: Date | string | null
     listId: string
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9399,6 +10638,39 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type ProjectCreateManyOwnerInput = {
+    id?: string
+    name: string
+    description?: string | null
+    color?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ListCreateManyOwnerInput = {
+    id?: string
+    name: string
+    projectId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaskCreateManyOwnerInput = {
+    id?: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    dueDate?: Date | string | null
+    listId: string
+    assigneeId?: string | null
+    parentId?: string | null
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type TaskUpdateWithoutAssigneeInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -9406,9 +10678,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     list?: ListUpdateOneRequiredWithoutTasksNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedTasksNestedInput
     parent?: TaskUpdateOneWithoutSubtasksNestedInput
     subtasks?: TaskUpdateManyWithoutParentNestedInput
     comments?: CommentUpdateManyWithoutTaskNestedInput
@@ -9422,7 +10696,9 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subtasks?: TaskUncheckedUpdateManyWithoutParentNestedInput
@@ -9437,7 +10713,9 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9463,26 +10741,149 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ProjectUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lists?: ListUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lists?: ListUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ListUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutListsNestedInput
+    tasks?: TaskUpdateManyWithoutListNestedInput
+  }
+
+  export type ListUncheckedUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUncheckedUpdateManyWithoutListNestedInput
+  }
+
+  export type ListUncheckedUpdateManyWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaskUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    list?: ListUpdateOneRequiredWithoutTasksNestedInput
+    assignee?: UserUpdateOneWithoutTasksNestedInput
+    parent?: TaskUpdateOneWithoutSubtasksNestedInput
+    subtasks?: TaskUpdateManyWithoutParentNestedInput
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    listId?: StringFieldUpdateOperationsInput | string
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subtasks?: TaskUncheckedUpdateManyWithoutParentNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    listId?: StringFieldUpdateOperationsInput | string
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ListCreateManyProjectInput = {
     id?: string
     name: string
+    ownerId: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ListUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutListsNestedInput
     tasks?: TaskUpdateManyWithoutListNestedInput
   }
 
   export type ListUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutListNestedInput
   }
 
   export type ListUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TaskCreateManyListInput = {
@@ -9493,7 +10894,9 @@ export namespace Prisma {
     priority?: string
     dueDate?: Date | string | null
     assigneeId?: string | null
+    ownerId: string
     parentId?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9505,9 +10908,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignee?: UserUpdateOneWithoutTasksNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedTasksNestedInput
     parent?: TaskUpdateOneWithoutSubtasksNestedInput
     subtasks?: TaskUpdateManyWithoutParentNestedInput
     comments?: CommentUpdateManyWithoutTaskNestedInput
@@ -9521,7 +10926,9 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subtasks?: TaskUncheckedUpdateManyWithoutParentNestedInput
@@ -9536,7 +10943,9 @@ export namespace Prisma {
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9550,6 +10959,8 @@ export namespace Prisma {
     dueDate?: Date | string | null
     listId: string
     assigneeId?: string | null
+    ownerId: string
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9568,10 +10979,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     priority?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     list?: ListUpdateOneRequiredWithoutTasksNestedInput
     assignee?: UserUpdateOneWithoutTasksNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedTasksNestedInput
     subtasks?: TaskUpdateManyWithoutParentNestedInput
     comments?: CommentUpdateManyWithoutTaskNestedInput
   }
@@ -9585,6 +10998,8 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subtasks?: TaskUncheckedUpdateManyWithoutParentNestedInput
@@ -9600,6 +11015,8 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     listId?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    order?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

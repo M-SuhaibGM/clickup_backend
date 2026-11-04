@@ -128,7 +128,6 @@ exports.Prisma.UserScalarFieldEnum = {
   avatar: 'avatar',
   googleId: 'googleId',
   provider: 'provider',
-  refreshToken: 'refreshToken',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -137,13 +136,20 @@ exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  createdAt: 'createdAt'
+  color: 'color',
+  ownerId: 'ownerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ListScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  projectId: 'projectId'
+  projectId: 'projectId',
+  ownerId: 'ownerId',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.TaskScalarFieldEnum = {
@@ -155,7 +161,9 @@ exports.Prisma.TaskScalarFieldEnum = {
   dueDate: 'dueDate',
   listId: 'listId',
   assigneeId: 'assigneeId',
+  ownerId: 'ownerId',
   parentId: 'parentId',
+  order: 'order',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

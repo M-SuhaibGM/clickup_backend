@@ -13,4 +13,7 @@ export const UserService = {
       createdAt: user.createdAt,
     };
   },
+  async listUsers() {
+    return UserModel.findAll();
+  },
 };
