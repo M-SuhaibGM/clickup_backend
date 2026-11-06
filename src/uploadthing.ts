@@ -1,5 +1,4 @@
 import { createUploadthing, type FileRouter } from "uploadthing/express";
-import { getIO } from "./config/socket"; // If you want to notify via socket later
 
 const f = createUploadthing();
 
@@ -10,7 +9,7 @@ export const uploadRouter = {
     pdf: { maxFileSize: "8MB", maxFileCount: 5 },
     // You can add more types like "blob" for any file
   })
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
       // Optional: Add authentication here using your JWT
       // For now, we'll just return a dummy user ID
       return { userId: "user_123" };
