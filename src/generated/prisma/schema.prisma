@@ -8,7 +8,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// User Roles Enum
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -20,23 +19,76 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tasks      Task[]    @relation("UserTasks")
-  comments   Comment[]
-  projects   Project[] @relation("UserProjects")
-  lists      List[]    @relation("UserLists") // ← ADD
-  ownedTasks Task[]    @relation("OwnedTasks") // ← ADD
+  // Workspace relationships
+  memberships     WorkspaceMember[]
+  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+
+  // Task relationships
+  assignedTasks Task[]     @relation("UserTasks")
+  comments      Comment[]
+  projects      Project[]  @relation("ProjectCreator")
+  activities    Activity[]
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members    WorkspaceMember[]
+  projects   Project[]
+  ownerId    String
+  owner      User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  userId     String?
+  activities Activity[]
+}
+
+model WorkspaceMember {
+  id          String   @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        String   @default("MEMBER") // "ADMIN" | "MEMBER"
+  jobTitle    String?  @default("Fullstack Developer")
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+// backend/prisma/schema.prisma
+model Activity {
+  id          String   @id @default(uuid())
+  workspaceId String
+  userId      String
+  action      String // e.g., "created", "updated", "deleted"
+  entityType  String // e.g., "project", "list", "task", "member"
+  entityName  String // e.g., "Marketing Site"
+  metadata    Json? // Optional: { from: "...", to: "..." }
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Project {
   id          String   @id @default(uuid())
   name        String
   description String?
-  color       String   @default("#6366f1") // ← ADD (for sidebar dot)
-  ownerId     String // ← ADD
-  owner       User     @relation("UserProjects", fields: [ownerId], references: [id], onDelete: Cascade) // ← ADD
+  color       String   @default("#6366f1")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  lists       List[]
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  creatorId String
+  creator   User   @relation("ProjectCreator", fields: [creatorId], references: [id])
+
+  lists List[]
 }
 
 model List {
@@ -44,11 +96,7 @@ model List {
   name      String
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  ownerId String
-  owner   User   @relation("UserLists", fields: [ownerId], references: [id], onDelete: Cascade)
-
-  order Float @default(0) // ← ADD THIS
+  order     Float   @default(0)
 
   tasks     Task[]
   createdAt DateTime @default(now())
@@ -69,18 +117,15 @@ model Task {
   assigneeId String?
   assignee   User?   @relation("UserTasks", fields: [assigneeId], references: [id])
 
-  ownerId String
-  owner   User   @relation("OwnedTasks", fields: [ownerId], references: [id], onDelete: Cascade)
-
   parentId String?
   parent   Task?   @relation("Subtasks", fields: [parentId], references: [id])
   subtasks Task[]  @relation("Subtasks")
 
-  order Float @default(0) // ← ADD THIS
-
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  order       Float     @default(0)
+  attachments String[]  @default([]) // ← ADD THIS
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Comment {
@@ -89,6 +134,6 @@ model Comment {
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }

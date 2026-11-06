@@ -8,7 +8,7 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ user });
 });
-export const listUsers = asyncHandler(async (req: Request, res: Response) => {
+export const listUsers = asyncHandler(async (_req: Request, res: Response) => {
   const users = await UserService.listUsers();
   res.json({ users });
 });

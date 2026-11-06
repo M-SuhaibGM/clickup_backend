@@ -30,10 +30,11 @@ export const TokenService = {
   refreshCookieOptions() {
     return {
       httpOnly: true,
-      secure: env.nodeEnv === 'production', // false for localhost
-      sameSite: 'lax' as const,             // 'lax' allows localhost:3000 -> localhost:5000
-      maxAge: 7 * 24 * 60 * 60 * 1000,      // 7 days
+      secure: false, // Keep false for localhost
+      sameSite: 'lax' as const,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
+      // DO NOT SET DOMAIN. Let the browser/Next.js handle it.
     };
   }
 }

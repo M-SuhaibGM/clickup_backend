@@ -2,6 +2,8 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
 import { env } from './env';
 import { AuthService } from '../services/auth.service';
+import { WorkspaceService } from '../services/workspace.service'; // ← Import
+import { EmailService } from '../services/email.service'; // ← Import
 
 passport.use(
   new GoogleStrategy(
@@ -21,6 +23,18 @@ passport.use(
           name: profile.displayName || email.split('@')[0],
           avatar: profile.photos?.[0]?.value,
         });
+
+        // Check if the user was created within the last 10 seconds (new signup)
+        const isNewUser = new Date().getTime() - new Date(user.createdAt).getTime() < 10000;
+
+        if (isNewUser) {
+          // Create a default workspace using their first name
+          const firstName = user.name.split(' ')[0];
+          await WorkspaceService.create(user.id, `${firstName}'s Workspace`);
+
+          // Fire the welcome email
+          EmailService.sendWelcomeEmail(user.email, user.name);
+        }
 
         return done(null, user);
       } catch (err) {

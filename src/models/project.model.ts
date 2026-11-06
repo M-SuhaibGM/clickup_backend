@@ -2,40 +2,64 @@
 import { prisma } from './index';
 
 export const ProjectModel = {
-  findAllByOwner(ownerId: string) {
+  // Find all projects in a workspace, ensuring the user is a member
+  findAllByWorkspace(workspaceId: string, userId: string) {
     return prisma.project.findMany({
-      where: { ownerId },
+      where: { 
+        workspaceId,
+        workspace: { members: { some: { userId } } } 
+      },
       orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { lists: true } } },
-    });
-  },
-
-  findByIdAndOwner(id: string, ownerId: string) {
-    return prisma.project.findFirst({
-      where: { id, ownerId },
-      include: {
-        lists: { orderBy: { name: 'asc' } },
+      include: { 
+        _count: { 
+          select: { lists: true } 
+        } 
       },
     });
   },
 
-  create(ownerId: string, data: { name: string; description?: string; color?: string }) {
-    return prisma.project.create({
-      data: { ...data, ownerId },
+  // Find a single project, ensuring the user is a member
+  findByIdAndMember(id: string, userId: string) {
+    return prisma.project.findFirst({
+      where: { 
+        id, 
+        workspace: { members: { some: { userId } } } 
+      },
+      include: {
+        lists: { orderBy: { order: 'asc' } }, // Assuming lists have an order field now
+      },
     });
   },
 
-  update(id: string, ownerId: string, data: { name?: string; description?: string; color?: string }) {
-    // updateMany with ownerId guard ensures you can't update someone else's project
+  // Create a project (workspaceId and creatorId are required)
+  create(workspaceId: string, creatorId: string, data: { name: string; description?: string; color?: string }) {
+    return prisma.project.create({
+      data: { 
+        ...data, 
+        workspaceId,
+        creatorId
+      },
+    });
+  },
+
+  // Update a project, ensuring the user is a member
+  update(id: string, userId: string, data: { name?: string; description?: string; color?: string }) {
     return prisma.project.updateMany({
-      where: { id, ownerId },
+      where: { 
+        id, 
+        workspace: { members: { some: { userId } } } 
+      },
       data,
     });
   },
 
-  delete(id: string, ownerId: string) {
+  // Delete a project, ensuring the user is a member
+  delete(id: string, userId: string) {
     return prisma.project.deleteMany({
-      where: { id, ownerId },
+      where: { 
+        id, 
+        workspace: { members: { some: { userId } } } 
+      },
     });
   },
 };

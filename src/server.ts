@@ -1,11 +1,16 @@
+import http from 'http'; // ← Import
 import app from './app';
 import { env } from './config/env';
 import { prisma } from './models';
+import { initSocket } from './config/socket'; // ← Import
 
-const server = app.listen(env.port, () => {
+const server = http.createServer(app); // ← Change app.listen to http.createServer
+initSocket(server); // ← Initialize Socket.io
+
+server.listen(env.port, () => {
   console.log(`\n🚀 Server running on http://localhost:${env.port}`);
   console.log(`🌐 Environment: ${env.nodeEnv}`);
-  console.log(`🔗 API Base: http://localhost:${env.port}/api`);
+  console.log(`🔌 WebSocket ready`);
   console.log(`-----------------------------------------\n`);
 });
 

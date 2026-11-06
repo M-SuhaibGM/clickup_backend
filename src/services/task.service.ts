@@ -6,20 +6,20 @@ const VALID_STATUSES = ['TODO', 'IN_PROGRESS', 'DONE'];
 const VALID_PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
 
 export const TaskService = {
-  listByList(listId: string, ownerId: string) {
-    return TaskModel.findAllByList(listId, ownerId);
+  listByList(listId: string, userId: string) {
+    return TaskModel.findAllByList(listId, userId);
   },
 
-  getOne(id: string, ownerId: string) {
-    return TaskModel.findByIdAndOwner(id, ownerId);
+  getOne(id: string, userId: string) {
+    return TaskModel.findByIdAndMember(id, userId);
   },
 
-  async create(listId: string, ownerId: string, input: any) {
+  async create(listId: string, userId: string, input: any) {
     if (!input.title?.trim()) throw new Error('Task title is required');
 
-    // Verify list belongs to this owner before creating a task in it
-    const list = await ListModel.findByIdAndOwner(listId, ownerId);
-    if (!list) throw new Error('List not found or not owned by you');
+    // Verify list exists and user has access
+    const list = await ListModel.findByIdAndMember(listId, userId);
+    if (!list) throw new Error('List not found or unauthorized');
 
     const data: any = {
       title: input.title.trim(),
@@ -36,14 +36,12 @@ export const TaskService = {
     }
     if (input.dueDate) data.dueDate = new Date(input.dueDate);
     if (input.assigneeId) data.assigneeId = input.assigneeId;
+    if (input.parentId) data.parentId = input.parentId;
 
-    // Pass ownerId to model
-    return TaskModel.create(listId, ownerId, data);
+    return TaskModel.create(listId, data);
   },
 
-  async update(id: string, ownerId: string, input: any) {
-    // ... (data building logic stays exactly the same) ...
-
+  async update(id: string, userId: string, input: any) {
     const data: any = {};
     if (input.title !== undefined) {
       if (!input.title.trim()) throw new Error('Title cannot be empty');
@@ -62,19 +60,30 @@ export const TaskService = {
       data.dueDate = input.dueDate ? new Date(input.dueDate) : null;
     }
     if (input.assigneeId !== undefined) data.assigneeId = input.assigneeId || null;
+    
+    if (input.attachments !== undefined) data.attachments = input.attachments;
 
-    const result = await TaskModel.update(id, ownerId, data);
-    if (result.count === 0) throw new Error('Task not found or not owned by you');
+    const result = await TaskModel.update(id, userId, data);
+    if (result.count === 0) throw new Error('Task not found or unauthorized');
 
-    return TaskModel.findByIdAndOwner(id, ownerId);
+    return TaskModel.findByIdAndMember(id, userId);
   },
 
-  async delete(id: string, ownerId: string) {
-    const result = await TaskModel.delete(id, ownerId);
-    if (result.count === 0) throw new Error('Task not found or not owned by you');
+  async delete(id: string, userId: string) {
+    // Fetch first to capture project info for the socket event
+    const task = await TaskModel.findByIdAndMember(id, userId);
+    if (!task) throw new Error('Task not found or unauthorized');
+
+    const result = await TaskModel.delete(id, userId);
+    if (result.count === 0) throw new Error('Task not found or unauthorized');
+
+    return task;
   },
 
-  async reorder(taskIds: string[], ownerId: string) {
-    return TaskModel.reorder(taskIds, ownerId);
+  listAssignedToUser(workspaceId: string, userId: string) {
+    return TaskModel.findAllAssignedToUser(workspaceId, userId);
+  },
+  async reorder(taskIds: string[], userId: string) {
+    return TaskModel.reorder(taskIds, userId);
   },
 };
