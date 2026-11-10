@@ -16,13 +16,22 @@ export const WorkspaceModel = {
   },
 
   findAllByUser(userId: string) {
-    return prisma.workspace.findMany({
-      where: { members: { some: { userId } } },
-      include: { _count: { select: { members: true, projects: true } } },
-    });
-  },
+  return prisma.workspace.findMany({
+    where: { members: { some: { userId } } },
+    include: {
+      _count: { select: { members: true, projects: true } },
+      // Only the caller's own membership — just need the role
+      members: {
+        where: { userId },
+        select: { role: true },
+      },
+    },
+  });
+},
 
   findByIdAndMember(id: string, userId: string) {
+        // console.log('[findByIdAndMember] args =', { id, userId });
+
     return prisma.workspace.findFirst({
       where: { id, members: { some: { userId } } },
       include: {
@@ -59,4 +68,5 @@ export const WorkspaceModel = {
       },
     });
   },
-};
+
+}

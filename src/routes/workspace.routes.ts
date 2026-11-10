@@ -33,6 +33,7 @@ router.post('/:workspaceId/automations', automationController.createAutomation);
 router.delete('/:workspaceId/automations/:id', automationController.deleteAutomation);
 
 // 6. Member management
+router.get('/:id/members', workspaceController.listMembers);           // ← ADD
 router.post('/:id/members', workspaceController.addMember);
 router.patch('/:id/members/:memberId', workspaceController.updateMember);
 router.delete('/:id/members/:memberId', workspaceController.removeMember);

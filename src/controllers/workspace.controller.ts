@@ -6,10 +6,18 @@ import { prisma } from '../models';
 import { ActivityService } from '../services/activity.service'; // ← Import
 
 export const listWorkspaces = asyncHandler(async (req: Request, res: Response) => {
-  const workspaces = await WorkspaceService.list(req.user!.id);
-  res.json({ workspaces });
+  const rows = await WorkspaceService.list(req.user!.id);
+  res.json({
+    workspaces: rows.map((w) => ({
+      id: w.id,
+      name: w.name,
+      slug: w.slug,
+      ownerId: w.ownerId,
+      _count: w._count,
+      role: w.members[0]?.role ?? 'MEMBER',
+    })),
+  });
 });
-
 export const getWorkspace = asyncHandler(async (req: Request, res: Response) => {
   const workspace = await WorkspaceService.getOne(req.params.id as string, req.user!.id);
   if (!workspace) return res.status(404).json({ error: 'Workspace not found' });
@@ -178,3 +186,22 @@ export const deleteWorkspace = asyncHandler(async (req: Request, res: Response) 
     res.status(400).json({ error: (err as Error).message });
   }
 });
+
+export async function listMembers(req: Request, res: Response) {
+  const { id: workspaceId } = req.params;
+  const userId = (req as any).user?.id; // or however you get the user
+
+  // Optional: ensure requester is a member
+  const requester = await prisma.workspaceMember.findUnique({
+    where: { workspaceId_userId: { workspaceId: workspaceId as string, userId } },
+  });
+  if (!requester) return res.status(403).json({ message: 'Not a member' });
+
+  const members = await prisma.workspaceMember.findMany({
+    where: { workspaceId: workspaceId as string },
+    include: { user: true },
+  });
+
+  return res.json(members);
+}
+
