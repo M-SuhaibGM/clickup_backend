@@ -1,6 +1,5 @@
 import { AutomationModel } from '../models/automation.model';
 import { EmailService } from './email.service';
-import { getIO } from '../config/socket';
 import { prisma } from '../models';
 
 export const AutomationService = {
