@@ -5,6 +5,7 @@ import projectRoutes from './project.routes';
 import { requireAuth } from '../middleware/auth.middleware';
 import * as taskController from '../controllers/task.controller';
 import * as activityController from '../controllers/activity.controller';
+import * as automationController from '../controllers/automation.controller'; // ← Import
 
 const router = Router();
 router.use(requireAuth);
@@ -22,14 +23,19 @@ router.get('/:workspaceId/my-tasks', taskController.listMyTasks);
 
 // 3. Pending task count (for sidebar badge)
 router.get('/:workspaceId/pending-task-count', taskController.getPendingTaskCount);
+
+// 4. Activity History
 router.get('/:workspaceId/activities', activityController.getWorkspaceActivities);
 
+// 5. Automations (Workflows)
+router.get('/:workspaceId/automations', automationController.listAutomations);
+router.post('/:workspaceId/automations', automationController.createAutomation);
+router.delete('/:workspaceId/automations/:id', automationController.deleteAutomation);
 
-// 4. Member management
+// 6. Member management
 router.post('/:id/members', workspaceController.addMember);
 router.patch('/:id/members/:memberId', workspaceController.updateMember);
 router.delete('/:id/members/:memberId', workspaceController.removeMember);
-
 
 // ─── GENERIC WORKSPACE ROUTES (Must be at the bottom) ───
 router.get('/:id', workspaceController.getWorkspace);

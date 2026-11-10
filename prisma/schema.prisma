@@ -1,7 +1,7 @@
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"  // ← Back to default location
+  output   = "../node_modules/.prisma/client" // ← Back to default location
 }
 
 datasource db {
@@ -30,6 +30,19 @@ model User {
   activities    Activity[]
 }
 
+// backend/prisma/schema.prisma
+model Automation {
+  id          String   @id @default(uuid())
+  workspaceId String
+  trigger     String   // "TASK_CREATED", "STATUS_DONE", "PRIORITY_URGENT"
+  action      String   // "SEND_EMAIL", "ASSIGN_TO_ADMIN", "SEND_SLACK"
+  actionValue String?  // Optional config (e.g., email address, admin userId)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
 model Workspace {
   id        String   @id @default(uuid())
   name      String
@@ -37,12 +50,13 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members    WorkspaceMember[]
-  projects   Project[]
-  ownerId    String
-  owner      User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
-  userId     String?
-  activities Activity[]
+  members     WorkspaceMember[]
+  projects    Project[]
+  ownerId     String
+  owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  userId      String?
+  activities  Activity[]
+  automations Automation[]
 }
 
 model WorkspaceMember {
