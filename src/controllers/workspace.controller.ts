@@ -74,7 +74,7 @@ export const updateMember = asyncHandler(async (req: Request, res: Response) => 
     if (!isAdmin) return res.status(403).json({ error: 'Only admins can edit members' });
 
     const updated = await prisma.workspaceMember.update({
-      where: { id: memberId as string },
+      where: { id: memberId as string, workspaceId: workspaceId as string },
       data: {
         ...(role && { role }),
         ...(jobTitle !== undefined && { jobTitle })
@@ -115,7 +115,7 @@ export const removeMember = asyncHandler(async (req: Request, res: Response) => 
     });
 
     await prisma.workspaceMember.delete({
-      where: { id: memberId as string },
+      where: { id: memberId as string, workspaceId: workspaceId as string },
     });
 
     // ─── LOG ACTIVITY ───
@@ -189,7 +189,7 @@ export const deleteWorkspace = asyncHandler(async (req: Request, res: Response) 
 
 export async function listMembers(req: Request, res: Response) {
   const { id: workspaceId } = req.params;
-  const userId = (req as any).user?.id; // or however you get the user
+  const userId = req.user!.id;
 
   // Optional: ensure requester is a member
   const requester = await prisma.workspaceMember.findUnique({

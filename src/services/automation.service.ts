@@ -25,11 +25,12 @@ export const AutomationService = {
         if (auto.action === 'SEND_EMAIL') {
           // Example: Send email to the assignee (or a configured email)
           if (task.assignee?.email) {
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
             await EmailService.sendTaskAssignedEmail(
               task.assignee.email,
               task.assignee.name,
               task.title,
-              `http://localhost:3000/tasks/${task.id}`,
+              `${frontendUrl}/tasks/${task.id}`,
               'Automated Notification'
             );
           }

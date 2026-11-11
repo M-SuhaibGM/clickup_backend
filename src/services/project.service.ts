@@ -26,12 +26,24 @@ export const ProjectService = {
   },
 
   async update(id: string, userId: string, input: { name?: string; description?: string; color?: string }) {
+    const project = await ProjectModel.findByIdAndMember(id, userId);
+    if (!project) throw new Error('Project not found or unauthorized');
+
+    const isAdmin = await WorkspaceModel.isAdmin(project.workspaceId, userId);
+    if (!isAdmin) throw new Error('Only admins can update projects');
+
     const result = await ProjectModel.update(id, userId, input);
     if (result.count === 0) throw new Error('Project not found or unauthorized');
     return ProjectModel.findByIdAndMember(id, userId);
   },
 
   async delete(id: string, userId: string) {
+    const project = await ProjectModel.findByIdAndMember(id, userId);
+    if (!project) throw new Error('Project not found or unauthorized');
+
+    const isAdmin = await WorkspaceModel.isAdmin(project.workspaceId, userId);
+    if (!isAdmin) throw new Error('Only admins can delete projects');
+
     const result = await ProjectModel.delete(id, userId);
     if (result.count === 0) throw new Error('Project not found or unauthorized');
   },

@@ -1,8 +1,9 @@
 // backend/src/services/task.service.ts
 import { TaskModel } from '../models/task.model';
 import { ListModel } from '../models/list.model';
-import { AutomationService } from './automation.service'; // ← Import
-import { prisma } from '../models'; // ← Import to fetch workspaceId
+import { WorkspaceModel } from '../models/workspace.model';
+import { AutomationService } from './automation.service';
+import { prisma } from '../models';
 
 const VALID_STATUSES = ['TODO', 'IN_PROGRESS', 'DONE'];
 const VALID_PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
@@ -22,6 +23,9 @@ export const TaskService = {
     const list = await ListModel.findByIdAndMember(listId, userId);
     if (!list) throw new Error('List not found or unauthorized');
 
+    const isAdmin = await WorkspaceModel.isAdmin(list.project.workspaceId, userId);
+    if (!isAdmin) throw new Error('Only admins can create tasks');
+
     const data: any = {
       title: input.title.trim(),
       description: input.description?.trim(),
@@ -35,7 +39,11 @@ export const TaskService = {
       if (!VALID_PRIORITIES.includes(input.priority)) throw new Error('Invalid priority');
       data.priority = input.priority;
     }
-    if (input.dueDate) data.dueDate = new Date(input.dueDate);
+    if (input.dueDate) {
+      const parsed = new Date(input.dueDate);
+      if (isNaN(parsed.getTime())) throw new Error('Invalid due date');
+      data.dueDate = parsed;
+    }
     if (input.assigneeId) data.assigneeId = input.assigneeId;
     if (input.parentId) data.parentId = input.parentId;
 
@@ -55,6 +63,17 @@ export const TaskService = {
   },
 
   async update(id: string, userId: string, input: any) {
+    // Fields that only admins may change
+    const ADMIN_ONLY_FIELDS = ['title', 'description', 'priority', 'dueDate', 'assigneeId', 'attachments'];
+    const requiresAdmin = ADMIN_ONLY_FIELDS.some((f) => input[f] !== undefined);
+
+    if (requiresAdmin) {
+      const task = await TaskModel.findByIdAndMember(id, userId);
+      if (!task) throw new Error('Task not found or unauthorized');
+      const isAdmin = await WorkspaceModel.isAdmin(task.list.project.workspaceId, userId);
+      if (!isAdmin) throw new Error('Only admins can edit task details');
+    }
+
     const data: any = {};
     if (input.title !== undefined) {
       if (!input.title.trim()) throw new Error('Title cannot be empty');
@@ -70,7 +89,13 @@ export const TaskService = {
       data.priority = input.priority;
     }
     if (input.dueDate !== undefined) {
-      data.dueDate = input.dueDate ? new Date(input.dueDate) : null;
+      if (input.dueDate) {
+        const parsed = new Date(input.dueDate);
+        if (isNaN(parsed.getTime())) throw new Error('Invalid due date');
+        data.dueDate = parsed;
+      } else {
+        data.dueDate = null;
+      }
     }
     if (input.assigneeId !== undefined) data.assigneeId = input.assigneeId || null;
     if (input.attachments !== undefined) data.attachments = input.attachments;
@@ -106,6 +131,9 @@ export const TaskService = {
   async delete(id: string, userId: string) {
     const task = await TaskModel.findByIdAndMember(id, userId);
     if (!task) throw new Error('Task not found or unauthorized');
+
+    const isAdmin = await WorkspaceModel.isAdmin(task.list.project.workspaceId, userId);
+    if (!isAdmin) throw new Error('Only admins can delete tasks');
 
     const result = await TaskModel.delete(id, userId);
     if (result.count === 0) throw new Error('Task not found or unauthorized');

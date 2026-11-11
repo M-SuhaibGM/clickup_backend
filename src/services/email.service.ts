@@ -1,10 +1,17 @@
 import { Resend } from 'resend';
 
-// Initialize Resend with the API key from .env
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Use the Resend testing domain for now (you can only send to your own email with this)
 const FROM_EMAIL = 'ClickUp Clone <onboarding@resend.dev>';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 export const EmailService = {
   async sendWelcomeEmail(toEmail: string, name: string) {
@@ -15,7 +22,7 @@ export const EmailService = {
         subject: 'Welcome to ClickUp Clone! 🚀',
         html: `
           <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
-            <h2>Welcome, ${name}! 👋</h2>
+            <h2>Welcome, ${escapeHtml(name)}! 👋</h2>
             <p>We're thrilled to have you on board. ClickUp Clone helps you manage your projects, tasks, and team all in one place.</p>
             <p>Here is what you can do next:</p>
             <ul>
@@ -23,7 +30,7 @@ export const EmailService = {
               <li>Invite your team members</li>
               <li>Start organizing your tasks</li>
             </ul>
-            <a href="http://localhost:3000/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 16px 0;">
+            <a href="${FRONTEND_URL}/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 16px 0;">
               Go to Dashboard
             </a>
           </div>
@@ -55,14 +62,14 @@ export const EmailService = {
         html: `
           <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
             <h2>New Task Assigned 📋</h2>
-            <p>Hi ${assigneeName},</p>
-            <p>You have been assigned a new task in the <strong>${projectName}</strong> project:</p>
-            
+            <p>Hi ${escapeHtml(assigneeName)},</p>
+            <p>You have been assigned a new task in the <strong>${escapeHtml(projectName)}</strong> project:</p>
+
             <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 16px 0;">
-              <h3 style="margin: 0; color: #111827;">${taskTitle}</h3>
+              <h3 style="margin: 0; color: #111827;">${escapeHtml(taskTitle)}</h3>
             </div>
 
-            <a href="${taskUrl}" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 16px 0;">
+            <a href="${escapeHtml(taskUrl)}" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 16px 0;">
               View Task
             </a>
           </div>
@@ -89,11 +96,11 @@ export const EmailService = {
         html: `
           <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
             <h2>You're in! 🎉</h2>
-            <p>Hi ${name},</p>
-            <p><strong>${inviterName}</strong> has added you to the <strong>${workspaceName}</strong> workspace on ClickUp Clone.</p>
+            <p>Hi ${escapeHtml(name)},</p>
+            <p><strong>${escapeHtml(inviterName)}</strong> has added you to the <strong>${escapeHtml(workspaceName)}</strong> workspace on ClickUp Clone.</p>
             <p>You can now collaborate with your team on projects, lists, and tasks.</p>
-            
-            <a href="http://localhost:3000/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 16px 0;">
+
+            <a href="${FRONTEND_URL}/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 16px 0;">
               Go to Workspace
             </a>
           </div>

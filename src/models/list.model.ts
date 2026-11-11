@@ -21,7 +21,7 @@ export const ListModel = {
         project: { workspace: { members: { some: { userId } } } } 
       },
       include: {
-        project: { select: { id: true, name: true, color: true } },
+        project: { select: { id: true, name: true, color: true, workspaceId: true } },
         tasks: {
           orderBy: { createdAt: 'desc' },
           include: {

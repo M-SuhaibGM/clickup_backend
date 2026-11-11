@@ -28,13 +28,15 @@ export const TokenService = {
   },
 
   refreshCookieOptions() {
+    const isProduction = env.nodeEnv === 'production';
     return {
       httpOnly: true,
-      secure: false, // Keep false for localhost
-      sameSite: 'lax' as const,
+      secure: isProduction,
+      // SameSite=None required for cross-origin XHR (Vercel frontend → Render backend).
+      // SameSite=None also requires Secure=true, so use Lax in development.
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
-      // DO NOT SET DOMAIN. Let the browser/Next.js handle it.
     };
   }
 }

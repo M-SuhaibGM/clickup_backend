@@ -4,18 +4,21 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
 import morgan from 'morgan';
-import { createRouteHandler } from 'uploadthing/express'; // ← Import UploadThing
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { createRouteHandler } from 'uploadthing/express';
 
 import { env } from './config/env';
 import './config/passport';
 import routes from './routes';
 import { errorHandler, notFound } from './middleware/error.middleware';
-import { uploadRouter } from './uploadthing'; // ← Import your FileRouter
+import { uploadRouter } from './uploadthing';
 
 const app = express();
 
-// Logging middleware
-app.use(morgan('dev'));
+app.use(helmet());
+
+app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
 
 app.use(
   cors({
@@ -26,6 +29,8 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+const isProduction = env.nodeEnv === 'production';
+
 // Session ONLY for the Passport Google OAuth handshake.
 app.use(
   session({
@@ -33,8 +38,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: env.nodeEnv === 'production',
+      secure: isProduction,
       httpOnly: true,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 10 * 60 * 1000, // 10 minutes
     },
   })
@@ -43,25 +49,41 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Health check
-app.get('/health', (_req, res) => {
-  res.json({ status: 'OK', service: 'clickup-clone-api', env: env.nodeEnv });
+// Auth rate limiter — prevents brute force on login/refresh endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
 });
 
-// ⚠️ UPLOADTHING: Mount this BEFORE your generic /api routes
+// General API rate limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+});
+
+// Health check — no env disclosure
+app.get('/health', (_req, res) => {
+  res.json({ status: 'OK' });
+});
+
+// UploadThing: mount before generic /api routes
 app.use(
   '/api/uploadthing',
-  createRouteHandler({
-    router: uploadRouter,
-    config: {
-      // Token is loaded from process.env.UPLOADTHING_TOKEN automatically
-      // You can also explicitly pass it here if needed:
-      // token: process.env.UPLOADTHING_TOKEN,
-    },
-  })
+  createRouteHandler({ router: uploadRouter, config: {} })
 );
 
-// Your existing API
+// Apply auth-specific rate limit to auth endpoints
+app.use('/api/auth', authLimiter);
+
+// Apply general rate limit to all API routes
+app.use('/api', apiLimiter);
+
 app.use('/api', routes);
 
 // 404 + errors

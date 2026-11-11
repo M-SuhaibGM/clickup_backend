@@ -32,24 +32,23 @@ export const UserModel = {
     });
   },
 
-  async upsertFromGoogle(profile: GoogleProfileInput) {
+  async upsertFromGoogle(profile: GoogleProfileInput): Promise<{ user: Awaited<ReturnType<typeof prisma.user.findUniqueOrThrow>>; isNew: boolean }> {
     // 1. Existing Google account
-    let user = await prisma.user.findUnique({
-      where: { googleId: profile.googleId },
-    });
-    if (user) return user;
+    let user = await prisma.user.findUnique({ where: { googleId: profile.googleId } });
+    if (user) return { user, isNew: false };
 
-    // 2. Same email exists → link
+    // 2. Same email exists → link accounts (not a new user)
     user = await prisma.user.findUnique({ where: { email: profile.email } });
     if (user) {
-      return prisma.user.update({
+      const updated = await prisma.user.update({
         where: { id: user.id },
         data: { googleId: profile.googleId, avatar: profile.avatar ?? user.avatar },
       });
+      return { user: updated, isNew: false };
     }
 
-    // 3. New user
-    return prisma.user.create({
+    // 3. Brand new user
+    const created = await prisma.user.create({
       data: {
         email: profile.email,
         name: profile.name,
@@ -58,5 +57,6 @@ export const UserModel = {
         provider: 'google',
       },
     });
+    return { user: created, isNew: true };
   },
 };

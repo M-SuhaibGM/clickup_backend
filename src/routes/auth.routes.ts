@@ -24,10 +24,13 @@ router.get(
   authController.googleCallback
 );
 
-// 3. Refresh access token
+// 3. Exchange one-time OAuth code for access token
+router.post('/exchange-code', authController.exchangeCode);
+
+// 4. Refresh access token
 router.post('/refresh', authController.refresh);
 
-// 4. Logout
+// 5. Logout
 router.post('/logout', authController.logout);
 
 export default router;

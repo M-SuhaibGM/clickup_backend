@@ -36,7 +36,7 @@ export const AuthService = {
     };
   },
 
-  /** Handle Google login: find or create the user. */
+  /** Handle Google login: find or create the user. Returns {user, isNew}. */
   async handleGoogleLogin(profile: {
     googleId: string;
     email: string;
