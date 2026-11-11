@@ -49,15 +49,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Auth rate limiter — prevents brute force on login/refresh endpoints
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many requests, please try again later.' },
-});
-
 // General API rate limiter
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -77,9 +68,6 @@ app.use(
   '/api/uploadthing',
   createRouteHandler({ router: uploadRouter, config: {} })
 );
-
-// Apply auth-specific rate limit to auth endpoints
-app.use('/api/auth', authLimiter);
 
 // Apply general rate limit to all API routes
 app.use('/api', apiLimiter);
