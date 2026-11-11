@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { UserModel } from '../models/user.model';
 import { TokenService } from './token.service';
+import { env } from '../config/env';
 
 export interface SafeUser {
   id: string;
@@ -54,8 +55,16 @@ export const AuthService = {
     return user;
   },
 
-  /** Clear the refresh cookie. */
+  /** Clear the refresh cookie.
+   *  Browsers require the attributes on Set-Cookie to match the original cookie,
+   *  otherwise the clear is ignored and the cookie sticks around until it expires. */
   clearRefreshCookie(res: Response) {
-    res.clearCookie('refreshToken', { path: '/' });
+    const isProduction = env.nodeEnv === 'production';
+    res.clearCookie('refreshToken', {
+      path: '/',
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+    });
   },
 };
