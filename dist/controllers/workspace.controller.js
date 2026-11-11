@@ -1,13 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteWorkspace = exports.updateWorkspace = exports.removeMember = exports.updateMember = exports.addMember = exports.createWorkspace = exports.getWorkspace = exports.listWorkspaces = void 0;
+exports.listMembers = listMembers;
 const workspace_service_1 = require("../services/workspace.service");
 const asyncHandler_1 = require("../utils/asyncHandler");
 const models_1 = require("../models");
 const activity_service_1 = require("../services/activity.service"); // ← Import
 exports.listWorkspaces = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
-    const workspaces = await workspace_service_1.WorkspaceService.list(req.user.id);
-    res.json({ workspaces });
+    const rows = await workspace_service_1.WorkspaceService.list(req.user.id);
+    res.json({
+        workspaces: rows.map((w) => ({
+            id: w.id,
+            name: w.name,
+            slug: w.slug,
+            ownerId: w.ownerId,
+            _count: w._count,
+            role: w.members[0]?.role ?? 'MEMBER',
+        })),
+    });
 });
 exports.getWorkspace = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const workspace = await workspace_service_1.WorkspaceService.getOne(req.params.id, req.user.id);
@@ -56,7 +66,7 @@ exports.updateMember = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
         if (!isAdmin)
             return res.status(403).json({ error: 'Only admins can edit members' });
         const updated = await models_1.prisma.workspaceMember.update({
-            where: { id: memberId },
+            where: { id: memberId, workspaceId: workspaceId },
             data: {
                 ...(role && { role }),
                 ...(jobTitle !== undefined && { jobTitle })
@@ -91,7 +101,7 @@ exports.removeMember = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
             include: { user: { select: { name: true } } },
         });
         await models_1.prisma.workspaceMember.delete({
-            where: { id: memberId },
+            where: { id: memberId, workspaceId: workspaceId },
         });
         // ─── LOG ACTIVITY ───
         if (memberToRemove) {
@@ -153,3 +163,18 @@ exports.deleteWorkspace = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
         res.status(400).json({ error: err.message });
     }
 });
+async function listMembers(req, res) {
+    const { id: workspaceId } = req.params;
+    const userId = req.user.id;
+    // Optional: ensure requester is a member
+    const requester = await models_1.prisma.workspaceMember.findUnique({
+        where: { workspaceId_userId: { workspaceId: workspaceId, userId } },
+    });
+    if (!requester)
+        return res.status(403).json({ message: 'Not a member' });
+    const members = await models_1.prisma.workspaceMember.findMany({
+        where: { workspaceId: workspaceId },
+        include: { user: true },
+    });
+    return res.json(members);
+}

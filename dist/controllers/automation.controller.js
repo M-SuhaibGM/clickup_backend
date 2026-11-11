@@ -22,6 +22,12 @@ exports.createAutomation = (0, asyncHandler_1.asyncHandler)(async (req, res) => 
     const { trigger, action, actionValue } = req.body;
     if (!trigger || !action)
         return res.status(400).json({ error: 'Trigger and action required' });
+    const VALID_TRIGGERS = ['TASK_CREATED', 'STATUS_DONE', 'PRIORITY_URGENT'];
+    const VALID_ACTIONS = ['SEND_EMAIL', 'ASSIGN_TO_ADMIN', 'CREATE_SUBTASK'];
+    if (!VALID_TRIGGERS.includes(trigger))
+        return res.status(400).json({ error: 'Invalid trigger' });
+    if (!VALID_ACTIONS.includes(action))
+        return res.status(400).json({ error: 'Invalid action' });
     const automation = await automation_service_1.AutomationService.create(workspaceId, { trigger, action, actionValue });
     res.status(201).json({ automation });
 });

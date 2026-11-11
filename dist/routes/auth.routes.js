@@ -51,8 +51,10 @@ router.get('/google/callback', passport_1.default.authenticate('google', {
     session: false,
     failureRedirect: `${env_1.env.frontendUrl}/login?error=google_auth_failed`,
 }), authController.googleCallback);
-// 3. Refresh access token
+// 3. Exchange one-time OAuth code for access token
+router.post('/exchange-code', authController.exchangeCode);
+// 4. Refresh access token
 router.post('/refresh', authController.refresh);
-// 4. Logout
+// 5. Logout
 router.post('/logout', authController.logout);
 exports.default = router;

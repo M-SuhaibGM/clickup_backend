@@ -1,29 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.refresh = exports.googleCallback = void 0;
+exports.logout = exports.refresh = exports.exchangeCode = exports.googleCallback = void 0;
+const crypto_1 = require("crypto");
 const auth_service_1 = require("../services/auth.service");
 const asyncHandler_1 = require("../utils/asyncHandler");
 const env_1 = require("../config/env");
-/**
- * GET /api/auth/google
- * Redirects to Google's consent screen.
- * Handled by passport.authenticate in the router — not here.
- */
-/**
- * GET /api/auth/google/callback
- * Passport has already attached `req.user` (SafeUser shape from passport strategy — we
- * only carry id/email in the "user", so we re-fetch via AuthService.refresh? No — we
- * rely on the strategy returning the full Prisma user. In passport.ts we pass the full
- * Prisma `user` object to `done(null, user)`. So req.user has id + email here.)
- */
+// In-memory one-time code store (single-instance; fine for Render free tier).
+// Each entry lives for 60 seconds and is consumed on first use.
+const pendingCodes = new Map();
+function issueCode(token) {
+    const code = (0, crypto_1.randomBytes)(32).toString('hex');
+    pendingCodes.set(code, { token, expiresAt: Date.now() + 60000 });
+    // Prune expired codes on each issue to prevent unbounded growth
+    for (const [k, v] of pendingCodes) {
+        if (v.expiresAt < Date.now())
+            pendingCodes.delete(k);
+    }
+    return code;
+}
+/** GET /api/auth/google/callback */
 exports.googleCallback = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const user = req.user;
-    // Issue access + refresh, set cookie
     const { accessToken } = auth_service_1.AuthService.issueTokensForUser(user, res);
-    // Redirect to frontend callback page with token in query
-    // (For a production app, replace this with a one-time auth code exchange.)
-    const redirectUrl = `${env_1.env.frontendUrl}/auth/callback?token=${accessToken}`;
-    res.redirect(redirectUrl);
+    // Store the token server-side; send only a short-lived opaque code in the URL.
+    // The frontend exchanges the code for the token via POST /api/auth/exchange-code.
+    const code = issueCode(accessToken);
+    res.redirect(`${env_1.env.frontendUrl}/auth/callback?code=${code}`);
+});
+/** POST /api/auth/exchange-code — one-time code → access token */
+exports.exchangeCode = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { code } = req.body;
+    if (!code || typeof code !== 'string') {
+        return res.status(400).json({ error: 'Missing code' });
+    }
+    const entry = pendingCodes.get(code);
+    pendingCodes.delete(code); // consume immediately (one-time use)
+    if (!entry || entry.expiresAt < Date.now()) {
+        return res.status(401).json({ error: 'Invalid or expired code' });
+    }
+    res.json({ accessToken: entry.token });
 });
 /** POST /api/auth/refresh */
 exports.refresh = (0, asyncHandler_1.asyncHandler)(async (req, res) => {

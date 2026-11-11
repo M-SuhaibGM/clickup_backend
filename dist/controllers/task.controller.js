@@ -49,7 +49,8 @@ exports.updateTask = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
         const newAssigneeId = task.assigneeId;
         const assigneeChanged = newAssigneeId && newAssigneeId !== previousAssigneeId;
         if (assigneeChanged && task.assignee?.email) {
-            const taskUrl = `http://localhost:3000/tasks/${task.id}`; // ← Updated to new route
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+            const taskUrl = `${frontendUrl}/tasks/${task.id}`;
             email_service_1.EmailService.sendTaskAssignedEmail(task.assignee.email, task.assignee.name, task.title, taskUrl, task.list.project.name || 'Workspace');
         }
         res.json({ task });

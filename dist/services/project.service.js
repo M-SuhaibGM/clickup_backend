@@ -25,12 +25,24 @@ exports.ProjectService = {
         });
     },
     async update(id, userId, input) {
+        const project = await project_model_1.ProjectModel.findByIdAndMember(id, userId);
+        if (!project)
+            throw new Error('Project not found or unauthorized');
+        const isAdmin = await workspace_model_1.WorkspaceModel.isAdmin(project.workspaceId, userId);
+        if (!isAdmin)
+            throw new Error('Only admins can update projects');
         const result = await project_model_1.ProjectModel.update(id, userId, input);
         if (result.count === 0)
             throw new Error('Project not found or unauthorized');
         return project_model_1.ProjectModel.findByIdAndMember(id, userId);
     },
     async delete(id, userId) {
+        const project = await project_model_1.ProjectModel.findByIdAndMember(id, userId);
+        if (!project)
+            throw new Error('Project not found or unauthorized');
+        const isAdmin = await workspace_model_1.WorkspaceModel.isAdmin(project.workspaceId, userId);
+        if (!isAdmin)
+            throw new Error('Only admins can delete projects');
         const result = await project_model_1.ProjectModel.delete(id, userId);
         if (result.count === 0)
             throw new Error('Project not found or unauthorized');

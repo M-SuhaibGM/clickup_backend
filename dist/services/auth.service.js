@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const user_model_1 = require("../models/user.model");
 const token_service_1 = require("./token.service");
+const env_1 = require("../config/env");
 exports.AuthService = {
     /** Issue tokens for a given user and set refresh cookie. */
     issueTokensForUser(user, res) {
@@ -23,7 +24,7 @@ exports.AuthService = {
             },
         };
     },
-    /** Handle Google login: find or create the user. */
+    /** Handle Google login: find or create the user. Returns {user, isNew}. */
     async handleGoogleLogin(profile) {
         return user_model_1.UserModel.upsertFromGoogle(profile);
     },
@@ -35,8 +36,16 @@ exports.AuthService = {
             throw new Error('User not found');
         return user;
     },
-    /** Clear the refresh cookie. */
+    /** Clear the refresh cookie.
+     *  Browsers require the attributes on Set-Cookie to match the original cookie,
+     *  otherwise the clear is ignored and the cookie sticks around until it expires. */
     clearRefreshCookie(res) {
-        res.clearCookie('refreshToken', { path: '/' });
+        const isProduction = env_1.env.nodeEnv === 'production';
+        res.clearCookie('refreshToken', {
+            path: '/',
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+        });
     },
 };

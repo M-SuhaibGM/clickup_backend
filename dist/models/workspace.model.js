@@ -19,10 +19,18 @@ exports.WorkspaceModel = {
     findAllByUser(userId) {
         return index_1.prisma.workspace.findMany({
             where: { members: { some: { userId } } },
-            include: { _count: { select: { members: true, projects: true } } },
+            include: {
+                _count: { select: { members: true, projects: true } },
+                // Only the caller's own membership — just need the role
+                members: {
+                    where: { userId },
+                    select: { role: true },
+                },
+            },
         });
     },
     findByIdAndMember(id, userId) {
+        // console.log('[findByIdAndMember] args =', { id, userId });
         return index_1.prisma.workspace.findFirst({
             where: { id, members: { some: { userId } } },
             include: {
