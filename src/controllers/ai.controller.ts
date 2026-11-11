@@ -16,6 +16,17 @@ export const suggestSubtasks = asyncHandler(async (req: Request, res: Response) 
   }
 });
 
+// POST /ai/draft  { prompt }  ->  { tasks: [{ title, description, priority }] }
+export const draftTasks = asyncHandler(async (req: Request, res: Response) => {
+  const { prompt } = req.body ?? {};
+  try {
+    const tasks = await AiService.draftTasks(prompt);
+    res.json({ tasks });
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
 // POST /ai/summarize  { taskId }  ->  { summary: string }
 export const summarizeTask = asyncHandler(async (req: Request, res: Response) => {
   const { taskId } = req.body ?? {};

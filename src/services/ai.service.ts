@@ -94,6 +94,56 @@ export const AiService = {
     return subtasks;
   },
 
+  /** Turn a free-text goal into a structured list of tasks. */
+  async draftTasks(
+    prompt: string
+  ): Promise<{ title: string; priority: string; description: string }[]> {
+    if (!prompt?.trim()) throw new Error('Describe what you want to plan');
+
+    const raw = await chat(
+      [
+        {
+          role: 'system',
+          content:
+            'You are a project planner inside a task-management app. ' +
+            'Turn the user\'s goal into 5-8 concrete, ordered tasks. ' +
+            'For each task provide a short "title" (max ~10 words), a one-sentence ' +
+            '"description", and a "priority" that is exactly one of: LOW, NORMAL, HIGH, URGENT. ' +
+            'Respond with ONLY a JSON array of objects {"title","description","priority"} and nothing else.',
+        },
+        { role: 'user', content: prompt.trim() },
+      ],
+      900
+    );
+
+    const start = raw.indexOf('[');
+    const end = raw.lastIndexOf(']');
+    let parsed: any[] = [];
+    if (start !== -1 && end !== -1 && end > start) {
+      try {
+        parsed = JSON.parse(raw.slice(start, end + 1));
+      } catch {
+        parsed = [];
+      }
+    }
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error('AI did not return a task list');
+    }
+
+    const VALID = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
+    return parsed
+      .map((t) => {
+        const priority = String(t?.priority || 'NORMAL').toUpperCase();
+        return {
+          title: String(t?.title || '').trim(),
+          description: String(t?.description || '').trim(),
+          priority: VALID.includes(priority) ? priority : 'NORMAL',
+        };
+      })
+      .filter((t) => t.title)
+      .slice(0, 8);
+  },
+
   /** Summarize a comment thread into a few crisp bullets. */
   async summarizeComments(comments: { author: string; text: string }[]): Promise<string> {
     if (!comments || comments.length === 0) {
