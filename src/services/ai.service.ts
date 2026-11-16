@@ -8,7 +8,7 @@
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
-type ChatMessage = { role: 'system' | 'user'; content: string };
+type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
 async function chat(messages: ChatMessage[], maxTokens = 500): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -68,6 +68,54 @@ function parseStringArray(raw: string): string[] {
 }
 
 export const AiService = {
+  /** Free-form assistant chat, grounded in the user's own tasks. */
+  async converse(
+    message: string,
+    history: { role: string; content: string }[],
+    context: { userName?: string; tasks: string[] }
+  ): Promise<string> {
+    if (!message?.trim()) throw new Error('A message is required');
+
+    const past: ChatMessage[] = (Array.isArray(history) ? history : [])
+      .filter(
+        (m) =>
+          m &&
+          (m.role === 'user' || m.role === 'assistant') &&
+          typeof m.content === 'string' &&
+          m.content.trim()
+      )
+      .slice(-20)
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content.slice(0, 4000),
+      }));
+
+    const taskBlock = context.tasks.length
+      ? context.tasks.join('\n')
+      : '(no tasks are currently assigned to this user)';
+
+    return chat(
+      [
+        {
+          role: 'system',
+          content:
+            'You are the AI assistant inside a task-management app. ' +
+            'Help the user plan work, prioritize, summarize their tasks, and draft content ' +
+            '(task descriptions, project updates, messages). Be concise and practical. ' +
+            'Reply in plain text; use "- " for bullets and no markdown headings, bold, or tables. ' +
+            'Only state facts about the user\'s tasks that appear in the list below; ' +
+            'if something is not there, say you cannot see it.\n\n' +
+            `Today is ${new Date().toISOString().slice(0, 10)}.` +
+            (context.userName ? ` The user's name is ${context.userName}.` : '') +
+            `\n\nTasks assigned to the user:\n${taskBlock}`,
+        },
+        ...past,
+        { role: 'user', content: message.trim().slice(0, 4000) },
+      ],
+      900
+    );
+  },
+
   /** Suggest a short checklist of concrete subtasks for a task. */
   async generateSubtasks(title: string, description?: string): Promise<string[]> {
     if (!title?.trim()) throw new Error('A task title is required');

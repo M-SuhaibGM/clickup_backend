@@ -8,5 +8,6 @@ router.use(requireAuth);
 router.post('/subtasks', aiController.suggestSubtasks);
 router.post('/draft', aiController.draftTasks);
 router.post('/summarize', aiController.summarizeTask);
+router.post('/chat', aiController.chat);
 
 export default router;
