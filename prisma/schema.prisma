@@ -28,6 +28,7 @@ model User {
   comments      Comment[]
   projects      Project[]  @relation("ProjectCreator")
   activities    Activity[]
+  clips         Clip[]
 }
 
 // backend/prisma/schema.prisma
@@ -150,4 +151,19 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+
+model Clip {
+  id        String   @id @default(uuid())
+  title     String
+  url       String
+  fileKey   String
+  duration  Int?     // seconds
+  size      Int?     // bytes
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

@@ -7,5 +7,6 @@ const router = Router();
 
 router.get('/', requireAuth, userController.listUsers);
 router.get('/me', requireAuth, userController.getMe);
+router.patch('/me', requireAuth, userController.updateMe);
 
 export default router;

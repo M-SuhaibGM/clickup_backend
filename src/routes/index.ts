@@ -6,6 +6,7 @@ import listRoutes from './list.routes';
 import taskRoutes from './task.routes';
 import workspaceRoutes from './workspace.routes';
 import aiRoutes from './ai.routes';
+import clipRoutes from './clip.routes';
 
 
 const router = Router();
@@ -17,6 +18,7 @@ router.use('/lists', listRoutes);          // ← ADD
 router.use('/tasks', taskRoutes);   
 router.use('/workspaces', workspaceRoutes);
 router.use('/ai', aiRoutes);
+router.use('/clips', clipRoutes);
 
 
 export default router;

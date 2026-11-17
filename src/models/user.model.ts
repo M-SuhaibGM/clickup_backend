@@ -25,6 +25,9 @@ export const UserModel = {
       data: { ...data, provider: 'local' },
     });
   },
+  update(id: string, data: { name?: string; email?: string; password?: string; avatar?: string | null }) {
+    return prisma.user.update({ where: { id }, data });
+  },
   findAll() {
     return prisma.user.findMany({
       select: { id: true, name: true, email: true, avatar: true },
