@@ -11,6 +11,7 @@ export const WorkspaceModel = {
         members: {
           create: { userId, role: 'ADMIN' },         // creator is also an admin member
         },
+        spaces: { create: { name: 'Team Space', order: 0 } }, // every workspace starts with one space
       },
     });
   },

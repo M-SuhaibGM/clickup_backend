@@ -13,7 +13,8 @@ export const ProjectModel = {
       include: { 
         _count: { 
           select: { lists: true } 
-        } 
+        },
+        channel: { select: { id: true, name: true } },
       },
     });
   },
@@ -27,30 +28,52 @@ export const ProjectModel = {
       },
       include: {
         lists: { orderBy: { order: 'asc' } }, // Assuming lists have an order field now
+        space: { select: { id: true, name: true, color: true, icon: true } },
+        channel: { select: { id: true, name: true } },
       },
     });
   },
 
-  // Create a project (workspaceId and creatorId are required)
-  create(workspaceId: string, creatorId: string, data: { name: string; description?: string; color?: string }) {
+  // Create a project inside a space. Its single channel is created in the same
+  // write and takes the project's name.
+  create(
+    workspaceId: string,
+    creatorId: string,
+    spaceId: string,
+    data: { name: string; description?: string; color?: string }
+  ) {
     return prisma.project.create({
-      data: { 
-        ...data, 
+      data: {
+        ...data,
         workspaceId,
-        creatorId
+        spaceId,
+        creatorId,
+        channel: { create: { name: data.name } },
+      },
+      include: {
+        _count: { select: { lists: true } },
+        channel: { select: { id: true, name: true } },
       },
     });
   },
 
-  // Update a project, ensuring the user is a member
-  update(id: string, userId: string, data: { name?: string; description?: string; color?: string }) {
-    return prisma.project.updateMany({
-      where: { 
-        id, 
-        workspace: { members: { some: { userId } } } 
-      },
-      data,
-    });
+  // Update a project, ensuring the user is a member. The channel name is kept
+  // identical to the project name in the same transaction.
+  async update(
+    id: string,
+    userId: string,
+    data: { name?: string; description?: string; color?: string; spaceId?: string }
+  ) {
+    const [result] = await prisma.$transaction([
+      prisma.project.updateMany({
+        where: { id, workspace: { members: { some: { userId } } } },
+        data,
+      }),
+      ...(data.name
+        ? [prisma.channel.updateMany({ where: { projectId: id }, data: { name: data.name } })]
+        : []),
+    ]);
+    return result;
   },
 
   // Delete a project, ensuring the user is a member

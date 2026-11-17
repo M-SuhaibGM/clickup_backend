@@ -1,6 +1,7 @@
 // backend/src/routes/project.routes.ts
 import { Router } from 'express';
 import * as projectController from '../controllers/project.controller';
+import * as channelController from '../controllers/channel.controller';
 import * as listController from '../controllers/list.controller';
 import { requireAuth } from '../middleware/auth.middleware';
 
@@ -17,5 +18,10 @@ router.delete('/:id', projectController.deleteProject);
 // Lists nested under project
 router.get('/:projectId/lists', listController.listByProject);
 router.post('/:projectId/lists', listController.createList);
+
+// The project's single channel (named after the project)
+router.get('/:projectId/channel', channelController.getChannel);
+router.get('/:projectId/channel/messages', channelController.getMessages);
+router.post('/:projectId/channel/messages', channelController.sendMessage);
 
 export default router;

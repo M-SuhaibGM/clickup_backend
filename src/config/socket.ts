@@ -33,6 +33,9 @@ export const initSocket = (server: HttpServer) => {
     const userId = socket.data.userId;
     console.log(`🔌 User connected to Socket.io: ${userId}`);
 
+    // Personal room — used to push direct messages to every tab of this user
+    socket.join(`user:${userId}`);
+
     // ─── PROJECT ROOMS ───
     socket.on('join:project', async (projectId: string) => {
       try {

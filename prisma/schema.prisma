@@ -29,6 +29,11 @@ model User {
   projects      Project[]  @relation("ProjectCreator")
   activities    Activity[]
   clips         Clip[]
+
+  channelMessages  ChannelMessage[]
+  posts            Post[]
+  sentMessages     DirectMessage[] @relation("DmSender")
+  receivedMessages DirectMessage[] @relation("DmReceiver")
 }
 
 // backend/prisma/schema.prisma
@@ -52,12 +57,14 @@ model Workspace {
   updatedAt DateTime @updatedAt
 
   members     WorkspaceMember[]
+  spaces      Space[]
   projects    Project[]
   ownerId     String
   owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
   userId      String?
   activities  Activity[]
   automations Automation[]
+  directMessages DirectMessage[]
 }
 
 model WorkspaceMember {
@@ -89,6 +96,25 @@ model Activity {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Workspace -> Space -> Project -> (1 Channel + many Lists) -> Tasks
+model Space {
+  id          String   @id @default(uuid())
+  name        String
+  color       String   @default("#6366f1")
+  icon        String?  // key of a built-in icon; null = first letter of the name
+  description String?
+  order       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  projects Project[]
+
+  @@index([workspaceId, order])
+}
+
 model Project {
   id          String   @id @default(uuid())
   name        String
@@ -100,10 +126,65 @@ model Project {
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
+  // Every project lives in exactly one space. Nullable ONLY so existing rows
+  // survive the schema push; run `npm run backfill:spaces` once, after which
+  // this can be made required. The API always sets it for new projects.
+  spaceId String?
+  space   Space?  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
   creatorId String
   creator   User   @relation("ProjectCreator", fields: [creatorId], references: [id])
 
+  // Exactly one channel per project (projectId is @unique), named after the project.
+  channel Channel?
+
   lists List[]
+
+  @@index([spaceId])
+}
+
+// One chat channel per project; its name always mirrors the project name.
+model Channel {
+  id        String   @id @default(uuid())
+  name      String
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages ChannelMessage[]
+  posts    Post[]
+}
+
+// A post published to a project's channel (announcement, update, …)
+model Post {
+  id        String   @id @default(uuid())
+  channelId String
+  authorId  String
+  type      String   @default("ANNOUNCEMENT") // ANNOUNCEMENT | UPDATE | DISCUSSION | QUESTION
+  title     String?
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, createdAt])
+  @@index([authorId])
+}
+
+model ChannelMessage {
+  id        String   @id @default(uuid())
+  channelId String
+  senderId  String
+  text      String
+  createdAt DateTime @default(now())
+
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  sender  User    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, createdAt])
 }
 
 model List {
@@ -166,4 +247,23 @@ model Clip {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+
+// One-to-one chat message between two members of a workspace
+model DirectMessage {
+  id          String    @id @default(uuid())
+  workspaceId String
+  senderId    String
+  receiverId  String
+  text        String
+  readAt      DateTime? // null = receiver hasn't read it yet
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sender    User      @relation("DmSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver  User      @relation("DmReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, senderId, receiverId, createdAt])
+  @@index([workspaceId, receiverId, readAt])
 }
