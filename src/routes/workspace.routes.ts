@@ -2,11 +2,15 @@
 import { Router } from 'express';
 import * as postController from '../controllers/post.controller';
 import * as spaceController from '../controllers/space.controller';
+import * as teamController from '../controllers/team.controller';
+import * as personalTaskController from '../controllers/personalTask.controller';
+import * as timeController from '../controllers/timeEntry.controller';
 import * as workspaceController from '../controllers/workspace.controller';
 import projectRoutes from './project.routes';
 import { requireAuth } from '../middleware/auth.middleware';
 import * as taskController from '../controllers/task.controller';
 import * as activityController from '../controllers/activity.controller';
+import * as commentController from '../controllers/comment.controller';
 import * as dmController from '../controllers/directMessage.controller';
 import * as automationController from '../controllers/automation.controller'; // ← Import
 
@@ -22,6 +26,15 @@ router.post('/', workspaceController.createWorkspace);
 router.get('/:workspaceId/spaces', spaceController.listSpaces);
 router.post('/:workspaceId/spaces', spaceController.createSpace);
 
+// 0a. Teams (groups of people in a workspace)
+router.get('/:workspaceId/teams', teamController.listTeams);
+router.post('/:workspaceId/teams', teamController.createTeam);
+
+// 0a'. My Tasks page: private personal to-dos, and my tracked time
+router.get('/:workspaceId/personal-tasks', personalTaskController.listPersonalTasks);
+router.post('/:workspaceId/personal-tasks', personalTaskController.createPersonalTask);
+router.get('/:workspaceId/my-time', timeController.myTime);
+
 // 0b. Posts (published to a project's channel)
 router.get('/:workspaceId/posts', postController.listPosts);
 router.post('/:workspaceId/posts', postController.createPost);
@@ -31,6 +44,9 @@ router.use('/:workspaceId/projects', projectRoutes);
 
 // 2. Tasks assigned to me
 router.get('/:workspaceId/my-tasks', taskController.listMyTasks);
+
+// 2b. Comments on tasks assigned to me (or that I left on others' tasks)
+router.get('/:workspaceId/assigned-comments', commentController.listAssignedComments);
 
 // 3. Pending task count (for sidebar badge)
 router.get('/:workspaceId/pending-task-count', taskController.getPendingTaskCount);

@@ -2,6 +2,7 @@
 // Posts are published to a channel (every project has exactly one).
 import { prisma } from '../models';
 import { WorkspaceModel } from '../models/workspace.model';
+import { getIO } from '../config/socket';
 
 export const POST_TYPES = ['ANNOUNCEMENT', 'UPDATE', 'DISCUSSION', 'QUESTION'] as const;
 export type PostType = (typeof POST_TYPES)[number];
@@ -16,7 +17,17 @@ const httpError = (message: string, status: number) =>
 const include = {
   author: { select: { id: true, name: true, avatar: true } },
   channel: { select: { id: true, name: true, projectId: true } },
+  reactions: { select: { emoji: true, userId: true }, orderBy: { createdAt: 'asc' as const } },
 };
+
+/** Push a channel event to everyone who has the project open. A socket hiccup must never fail the request. */
+function broadcast(projectId: string, event: string, payload: object) {
+  try {
+    getIO().to(`project:${projectId}`).emit(event, { projectId, ...payload });
+  } catch (err) {
+    console.error(`Failed to broadcast ${event}`, err);
+  }
+}
 
 async function assertMember(workspaceId: string, userId: string) {
   const ws = await WorkspaceModel.findByIdAndMember(workspaceId, userId);
@@ -72,17 +83,19 @@ export const PostService = {
     const title = (input.title ?? '').trim();
     if (title.length > MAX_TITLE) throw httpError(`Title is too long (max ${MAX_TITLE})`, 400);
 
-    return prisma.post.create({
+    const post = await prisma.post.create({
       data: { channelId: channel.id, authorId: userId, type, title: title || null, content },
       include,
     });
+    broadcast(post.channel.projectId, 'channel:post', { post });
+    return post;
   },
 
   /** The author, or a workspace admin, can delete a post. */
   async delete(id: string, userId: string) {
     const post = await prisma.post.findFirst({
       where: { id, channel: { project: { workspace: { members: { some: { userId } } } } } },
-      include: { channel: { select: { project: { select: { workspaceId: true } } } } },
+      include: { channel: { select: { projectId: true, project: { select: { workspaceId: true } } } } },
     });
     if (!post) throw httpError('Post not found', 404);
 
@@ -91,5 +104,6 @@ export const PostService = {
       throw httpError('Only the author or an admin can delete this post', 403);
     }
     await prisma.post.delete({ where: { id } });
+    broadcast(post.channel.projectId, 'channel:post-deleted', { id });
   },
 };

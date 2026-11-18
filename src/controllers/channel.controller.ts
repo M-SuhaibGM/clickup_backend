@@ -28,6 +28,20 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
   } catch (err) { fail(res, err); }
 });
 
+export const react = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const reactions = await ChannelService.react(req.params.projectId as string, req.user!.id, req.body ?? {});
+    res.json({ reactions });
+  } catch (err) { fail(res, err); }
+});
+
+export const deleteMessage = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    await ChannelService.deleteMessage(req.params.projectId as string, req.user!.id, req.params.messageId as string);
+    res.json({ success: true });
+  } catch (err) { fail(res, err); }
+});
+
 export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
   try {
     const message = await ChannelService.send(req.params.projectId as string, req.user!.id, req.body?.text);

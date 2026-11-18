@@ -21,7 +21,8 @@ export const TaskModel = {
       where: { id, list: { project: { workspace: { members: { some: { userId } } } } } },
       include: {
         assignee: { select: { id: true, name: true, avatar: true, email: true } },
-        subtasks: { orderBy: { createdAt: 'asc' } },
+        subtasks: { orderBy: { createdAt: 'asc' }, include: { assignee: { select: { id: true, name: true, avatar: true } }, _count: { select: { comments: true } } } },
+        timeEntries: { orderBy: { startedAt: 'desc' }, include: { user: { select: { id: true, name: true, avatar: true } } } },
         list: {
           select: {
             id: true,

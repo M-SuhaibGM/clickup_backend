@@ -7,6 +7,7 @@
 
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const AI_TIMEOUT_MS = 30_000;
 
 type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
@@ -16,19 +17,29 @@ async function chat(messages: ChatMessage[], maxTokens = 500): Promise<string> {
     throw new Error('AI is not configured. Set OPENAI_API_KEY in the backend environment.');
   }
 
-  const res = await fetch(OPENAI_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      temperature: 0.4,
-      max_tokens: maxTokens,
-      messages,
-    }),
-  });
+  // Don't let a stalled upstream hold the request (and the user's spinner) open forever.
+  let res: Response;
+  try {
+    res = await fetch(OPENAI_URL, {
+      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        temperature: 0.4,
+        max_tokens: maxTokens,
+        messages,
+      }),
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'TimeoutError') {
+      throw new Error('The AI took too long to respond. Please try again.');
+    }
+    throw err;
+  }
 
   if (!res.ok) {
     const detail = await res.text().catch(() => '');

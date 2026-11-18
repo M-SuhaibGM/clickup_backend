@@ -4,13 +4,15 @@ import { TokenService } from '../services/token.service';
 import { WorkspaceModel } from '../models/workspace.model';
 import { ProjectModel } from '../models/project.model';
 import { env } from './env';
+import { describeError } from '../models';
 
 let io: SocketServer;
 
 export const initSocket = (server: HttpServer) => {
   io = new SocketServer(server, {
     cors: {
-      origin: env.frontendUrl,
+      // Same whitelist as the HTTP CORS config (FRONTEND_URL may list several origins).
+      origin: env.allowedOrigins,
       credentials: true,
     },
   });
@@ -48,7 +50,7 @@ export const initSocket = (server: HttpServer) => {
 
         socket.join(`project:${projectId}`);
       } catch (error) {
-        console.error('Error joining project room:', error);
+        console.error('Error joining project room:', describeError(error));
         socket.emit('error', { message: 'Failed to join project room' });
       }
     });
@@ -69,7 +71,7 @@ export const initSocket = (server: HttpServer) => {
 
         socket.join(`workspace:${workspaceId}`);
       } catch (error) {
-        console.error('Error joining workspace room:', error);
+        console.error('Error joining workspace room:', describeError(error));
         socket.emit('error', { message: 'Failed to join workspace room' });
       }
     });

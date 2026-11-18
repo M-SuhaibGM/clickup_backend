@@ -5,6 +5,7 @@ import session from 'express-session';
 import passport from 'passport';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { createRouteHandler } from 'uploadthing/express';
 
@@ -24,14 +25,14 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
+// gzip/deflate JSON responses (task lists, workspace payloads…) — big win on slow links.
+app.use(compression());
+
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
 
 // FRONTEND_URL may be a single origin or a comma-separated list — needed when
 // there are preview deployments (e.g. Vercel preview URLs) or a staging URL.
-const allowedOrigins = env.frontendUrl
-  .split(',')
-  .map((o) => o.trim())
-  .filter(Boolean);
+const allowedOrigins = env.allowedOrigins;
 
 app.use(
   cors({
@@ -39,7 +40,7 @@ app.use(
       // Allow same-origin / server-to-server requests (no Origin header) and
       // requests from any whitelisted frontend URL.
       if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error(`CORS: origin ${origin} is not allowed`));
+      return cb(Object.assign(new Error(`CORS: origin ${origin} is not allowed`), { status: 403 }));
     },
     credentials: true,
   })

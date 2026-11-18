@@ -29,6 +29,10 @@ model User {
   projects      Project[]  @relation("ProjectCreator")
   activities    Activity[]
   clips         Clip[]
+  teamMemberships TeamMember[]
+  channelReactions ChannelReaction[]
+  timeEntries TimeEntry[]
+  personalTasks PersonalTask[]
 
   channelMessages  ChannelMessage[]
   posts            Post[]
@@ -47,6 +51,8 @@ model Automation {
   createdAt   DateTime @default(now())
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model Workspace {
@@ -58,6 +64,7 @@ model Workspace {
 
   members     WorkspaceMember[]
   spaces      Space[]
+  teams       Team[]
   projects    Project[]
   ownerId     String
   owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id])
@@ -65,6 +72,7 @@ model Workspace {
   activities  Activity[]
   automations Automation[]
   directMessages DirectMessage[]
+  personalTasks PersonalTask[]
 }
 
 model WorkspaceMember {
@@ -79,6 +87,8 @@ model WorkspaceMember {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
+
+  @@index([userId])
 }
 
 // backend/prisma/schema.prisma
@@ -94,6 +104,8 @@ model Activity {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
 }
 
 // Workspace -> Space -> Project -> (1 Channel + many Lists) -> Tasks
@@ -113,6 +125,38 @@ model Space {
   projects Project[]
 
   @@index([workspaceId, order])
+}
+
+// Workspace -> Team -> Members (a team groups people, a space groups work)
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  color       String   @default("#6366f1")
+  icon        String?  // key of a built-in icon; null = first letter of the name
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  members TeamMember[]
+
+  @@index([workspaceId, createdAt])
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+
+  @@index([userId])
 }
 
 model Project {
@@ -141,6 +185,8 @@ model Project {
   lists List[]
 
   @@index([spaceId])
+
+  @@index([workspaceId, createdAt])
 }
 
 // One chat channel per project; its name always mirrors the project name.
@@ -169,6 +215,7 @@ model Post {
 
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   author  User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reactions ChannelReaction[]
 
   @@index([channelId, createdAt])
   @@index([authorId])
@@ -183,8 +230,28 @@ model ChannelMessage {
 
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   sender  User    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  reactions ChannelReaction[]
 
   @@index([channelId, createdAt])
+}
+
+// An emoji reaction on a channel message OR a post (exactly one of messageId / postId is set)
+model ChannelReaction {
+  id        String   @id @default(uuid())
+  emoji     String
+  userId    String
+  messageId String?
+  postId    String?
+  createdAt DateTime @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message ChannelMessage? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  post    Post?           @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, emoji, messageId])
+  @@unique([userId, emoji, postId])
+  @@index([messageId])
+  @@index([postId])
 }
 
 model List {
@@ -197,6 +264,8 @@ model List {
   tasks     Task[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([projectId, order])
 }
 
 model Task {
@@ -206,6 +275,10 @@ model Task {
   status      String    @default("TODO")
   priority    String    @default("NORMAL")
   dueDate     DateTime?
+  startDate   DateTime?
+  /** time estimate, in minutes */
+  estimateMinutes Int?
+  tags        String[]  @default([])
 
   listId String
   list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
@@ -220,8 +293,31 @@ model Task {
   order       Float     @default(0)
   attachments String[]  @default([]) // ← ADD THIS
   comments    Comment[]
+  timeEntries TimeEntry[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([listId, order])
+  @@index([assigneeId])
+  @@index([parentId])
+}
+
+// Time tracked on a task. A running timer has no endedAt; manual entries are stored as a start/end pair too.
+model TimeEntry {
+  id        String    @id @default(uuid())
+  taskId    String
+  userId    String
+  startedAt DateTime
+  endedAt   DateTime?
+  manual    Boolean   @default(false)
+  note      String?
+  createdAt DateTime  @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, startedAt])
+  @@index([userId, endedAt])
 }
 
 model Comment {
@@ -232,6 +328,27 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  /** set when the comment has been marked resolved */
+  resolvedAt DateTime?
+
+  @@index([taskId, createdAt])
+  @@index([userId])
+}
+
+// A private to-do on the "My Tasks" page — not tied to any project or list, and only ever visible to its owner.
+model PersonalTask {
+  id          String   @id @default(uuid())
+  title       String
+  done        Boolean  @default(false)
+  userId      String
+  workspaceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, workspaceId, done])
 }
 
 

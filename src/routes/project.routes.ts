@@ -23,5 +23,7 @@ router.post('/:projectId/lists', listController.createList);
 router.get('/:projectId/channel', channelController.getChannel);
 router.get('/:projectId/channel/messages', channelController.getMessages);
 router.post('/:projectId/channel/messages', channelController.sendMessage);
+router.delete('/:projectId/channel/messages/:messageId', channelController.deleteMessage);
+router.post('/:projectId/channel/reactions', channelController.react);
 
 export default router;

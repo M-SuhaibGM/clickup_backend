@@ -64,7 +64,7 @@ export const TaskService = {
 
   async update(id: string, userId: string, input: any) {
     // Fields that only admins may change
-    const ADMIN_ONLY_FIELDS = ['title', 'description', 'priority', 'dueDate', 'assigneeId', 'attachments'];
+    const ADMIN_ONLY_FIELDS = ['title', 'description', 'priority', 'dueDate', 'startDate', 'estimateMinutes', 'tags', 'assigneeId', 'attachments'];
     const requiresAdmin = ADMIN_ONLY_FIELDS.some((f) => input[f] !== undefined);
 
     if (requiresAdmin) {
@@ -96,6 +96,38 @@ export const TaskService = {
       } else {
         data.dueDate = null;
       }
+    }
+    if (input.startDate !== undefined) {
+      if (input.startDate) {
+        const parsed = new Date(input.startDate);
+        if (isNaN(parsed.getTime())) throw new Error('Invalid start date');
+        data.startDate = parsed;
+      } else {
+        data.startDate = null;
+      }
+    }
+    if (input.estimateMinutes !== undefined) {
+      if (input.estimateMinutes === null) {
+        data.estimateMinutes = null;
+      } else {
+        const m = Number(input.estimateMinutes);
+        if (!Number.isInteger(m) || m < 0 || m > 60 * 24 * 365) throw new Error('Invalid time estimate');
+        data.estimateMinutes = m || null;
+      }
+    }
+    if (input.tags !== undefined) {
+      if (!Array.isArray(input.tags)) throw new Error('Tags must be a list');
+      const tags = [...new Set(input.tags.map((t: unknown) => String(t).trim()).filter(Boolean))] as string[];
+      if (tags.length > 20) throw new Error('A task can have at most 20 tags');
+      if (tags.some((t) => t.length > 30)) throw new Error('Tags can be at most 30 characters');
+      data.tags = tags;
+    }
+    if (data.startDate !== undefined || data.dueDate !== undefined) {
+      // The start must not be after the due date (checked against whichever side wasn't just changed)
+      const current = await TaskModel.findByIdAndMember(id, userId);
+      const start = data.startDate !== undefined ? data.startDate : current?.startDate;
+      const due = data.dueDate !== undefined ? data.dueDate : current?.dueDate;
+      if (start && due && start.getTime() > due.getTime()) throw new Error('Start date cannot be after the due date');
     }
     if (input.assigneeId !== undefined) data.assigneeId = input.assigneeId || null;
     if (input.attachments !== undefined) data.attachments = input.attachments;
